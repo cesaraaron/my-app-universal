@@ -1,6 +1,7 @@
 import { ProductType, SaleType } from './HOCs'
 import moment from 'moment'
 import 'moment/locale/es'
+import { Platform } from 'react-native'
 
 moment.updateLocale('es', {
   calendar: {
@@ -9,6 +10,8 @@ moment.updateLocale('es', {
 })
 
 export { moment }
+
+export const isWeb = Platform.OS === 'web'
 
 export const MUTATION_ERROR = 'Al parecer algo salio mal :(. Prueba mas tarde'
 

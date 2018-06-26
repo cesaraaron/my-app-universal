@@ -95,7 +95,10 @@ export class PendingMutationsProvider extends React.Component<
         <IsOnlineConsumer>
           {({ isOnline }) => {
             if (isOnline) {
-              this.timeout = setTimeout(this.flushEntries, 10000)
+              this.timeout = setTimeout(
+                this.flushEntries,
+                10000
+              ) as NodeJS.Timer
             }
             return null
           }}

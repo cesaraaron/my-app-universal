@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { NetInfo, View, Text, ConnectionInfo } from 'react-native'
+import { NetInfo, View, Text } from 'react-native'
+import { isWeb } from '../utils'
 
 type IsOnlineState = {
   isOnline: boolean
@@ -23,10 +24,18 @@ export class IsOnlineProvider extends Component<IsOnlineProps, IsOnlineState> {
   }
 
   componentDidMount() {
-    NetInfo.getConnectionInfo().then(info => {
-      this._onConnectionChange(info)
-      NetInfo.addEventListener('connectionChange', this._onConnectionChange)
-    })
+    if (isWeb) {
+      window.addEventListener('offline', () =>
+        this.setState({ isOnline: false })
+      )
+      window.addEventListener('online', () => this.setState({ isOnline: true }))
+      this.setState({ isOnline: window.navigator.onLine })
+    } else {
+      NetInfo.getConnectionInfo().then(info => {
+        this._onConnectionChange(info)
+        NetInfo.addEventListener('connectionChange', this._onConnectionChange)
+      })
+    }
   }
 
   componentWillUnmount() {

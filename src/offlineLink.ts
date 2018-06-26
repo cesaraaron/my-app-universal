@@ -4,6 +4,7 @@ import QueueLink from 'apollo-link-queue'
 import { RetryLink } from 'apollo-link-retry'
 import { NetInfo } from 'react-native'
 import { InMemoryCache } from '../node_modules/apollo-cache-inmemory'
+import { isWeb } from './utils'
 
 export function createOfflineLink(cache: InMemoryCache) {
   const retryLink = new RetryLink({
@@ -21,13 +22,18 @@ export function createOfflineLink(cache: InMemoryCache) {
 
   const offlineLink = new QueueLink()
 
-  NetInfo.addEventListener('connectionChange', (event: any) => {
-    if (isOnline(event.type)) {
-      offlineLink.open()
-    } else {
-      offlineLink.close()
-    }
-  })
+  if (isWeb) {
+    window.addEventListener('offline', () => offlineLink.close())
+    window.addEventListener('online', () => offlineLink.open())
+  } else {
+    NetInfo.addEventListener('connectionChange', (event: any) => {
+      if (isOnline(event.type)) {
+        offlineLink.open()
+      } else {
+        offlineLink.close()
+      }
+    })
+  }
 
   function isOnline(connectionType: any) {
     return connectionType !== 'none' && connectionType !== 'unknown'
