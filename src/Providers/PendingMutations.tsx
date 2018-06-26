@@ -33,7 +33,7 @@ export class PendingMutationsProvider extends React.Component<
   PendingMutationsProps,
   PendingMutationsState
 > {
-  timeout?: NodeJS.Timer
+  timeout?: any
 
   state = {
     entries: [],
@@ -49,7 +49,7 @@ export class PendingMutationsProvider extends React.Component<
   }
 
   componentWillUnmount() {
-    clearTimeout(this.timeout as NodeJS.Timer)
+    clearTimeout(this.timeout)
   }
 
   addId: PendingMutationsInjectProps['addId'] = (
@@ -95,10 +95,7 @@ export class PendingMutationsProvider extends React.Component<
         <IsOnlineConsumer>
           {({ isOnline }) => {
             if (isOnline) {
-              this.timeout = setTimeout(
-                this.flushEntries,
-                10000
-              ) as NodeJS.Timer
+              this.timeout = setTimeout(this.flushEntries, 10000)
             }
             return null
           }}

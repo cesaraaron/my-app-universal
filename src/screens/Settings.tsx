@@ -14,6 +14,7 @@ import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 import { withAuth, WithAuthProps } from '../Providers/Auth'
 import { Notifications } from 'expo'
 import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
+import { alert } from '../components/alert'
 
 type SettingsProps = WithCurrentUserProps &
   NavigationScreenProps<{}> &
@@ -172,13 +173,13 @@ class Settings extends Component<SettingsProps, SettingsState> {
   _signOut = async () => {
     const { removeDeviceToken, signOut, isOnline } = this.props
 
-    // if (!isOnline) {
-    //   Alert.alert(
-    //     'Error',
-    //     'Solo puedes cerrar sesion cuando hay conneción a internet.'
-    //   )
-    //   return
-    // }
+    if (!isOnline) {
+      alert(
+        'Error',
+        'Solo puedes cerrar sesion cuando hay conneción a internet.'
+      )
+      return
+    }
     const token = await Notifications.getExpoPushTokenAsync()
 
     if (!token) {

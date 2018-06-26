@@ -3,10 +3,9 @@ import { ApolloLink } from 'apollo-link'
 import QueueLink from 'apollo-link-queue'
 import { RetryLink } from 'apollo-link-retry'
 import { NetInfo } from 'react-native'
-import { InMemoryCache } from '../node_modules/apollo-cache-inmemory'
 import { isWeb } from './utils'
 
-export function createOfflineLink(cache: InMemoryCache) {
+export function createOfflineLink() {
   const retryLink = new RetryLink({
     attempts: {
       max: Infinity,

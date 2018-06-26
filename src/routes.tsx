@@ -20,6 +20,7 @@ import Sales from './screens/Sales'
 // import Statistics from './screens/Statistics'
 // import { OfflineBanner, IsOnlineConsumer } from './Providers/IsOnline'
 import { IsOnlineConsumer, OfflineBanner } from './Providers/IsOnline'
+import { isWeb } from './utils'
 
 type IconType = 'MaterialCommunityIcons' | 'Ionicons' | 'FontAwesome'
 
@@ -60,6 +61,7 @@ const Home = TabNavigator(
   },
   {
     initialRouteName: 'Sales',
+    swipeEnabled: isWeb ? false : true,
     tabBarPosition: 'bottom',
     tabBarOptions:
       Platform.OS === 'android'

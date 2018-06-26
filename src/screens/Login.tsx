@@ -9,7 +9,7 @@ import {
   Button,
   Text,
 } from 'native-base'
-import { Keyboard, Alert } from 'react-native'
+import { Keyboard } from 'react-native'
 import { compose } from 'react-apollo'
 import { LoginMutationProps, withLogin } from '../HOCs'
 import { WithAuthProps, withAuth } from '../Providers/Auth'
@@ -18,6 +18,7 @@ import {
   WithIsOnlineProps,
   OfflineBanner,
 } from '../Providers/IsOnline'
+import { alert } from '../components/alert'
 
 type LoginState = {
   phoneNumber: string
@@ -81,13 +82,10 @@ class Login extends Component<LoginProps, LoginState> {
 
     Keyboard.dismiss()
 
-    // if (!isOnline) {
-    //   Alert.alert(
-    //     'Error',
-    //     'Se necesita conneción a internet para poder ingresar.'
-    //   )
-    //   return
-    // }
+    if (!isOnline) {
+      alert('Error', 'Se necesita conneción a internet para poder ingresar.')
+      return
+    }
 
     loginMutation({
       variables: {

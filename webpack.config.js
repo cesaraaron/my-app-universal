@@ -138,7 +138,7 @@ module.exports = {
     // module implementations should be written in files using the extension
     // '.web.js'.
     symlinks: false,
-    extensions: ['.web.js', '.js', '.ts', '.tsx'],
+    extensions: ['.web.js', '.js', '.web.ts', '.web.tsx', '.ts', '.tsx'],
     alias: {
       'react-native/Libraries/Renderer/shims/ReactNativePropRegistry':
         'react-native-web/dist/modules/ReactNativePropRegistry',

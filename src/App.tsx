@@ -6,7 +6,7 @@ import { HttpLink } from 'apollo-link-http'
 import { onError } from 'apollo-link-error'
 import { ApolloLink, Observable, Operation } from 'apollo-link'
 import { RootNavigator } from './routes'
-import { AsyncStorage, Alert } from 'react-native'
+import { AsyncStorage } from 'react-native'
 import { split } from 'apollo-link'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
@@ -19,10 +19,11 @@ import { Auth, AUTH_TOKEN } from './Providers/Auth'
 import { CurrentUserProvider } from './Providers/CurrentUser'
 import { IsOnlineProvider } from './Providers/IsOnline'
 import RegisterPushNotification from './components/RegisterPushNotification'
+import { alert } from './components/alert'
 
 const cache = new InMemoryCache()
 
-const offlineLink = createOfflineLink(cache)
+const offlineLink = createOfflineLink()
 
 export const persistor = new CachePersistor({
   cache,
@@ -94,7 +95,7 @@ const client = new ApolloClient({
         const message = graphQLErrors.reduce((prev, curr) => {
           return prev + curr.message + '. '
         }, '')
-        Alert.alert('Error', message)
+        alert('Error', message)
         graphQLErrors.map(({ message, locations, path }) =>
           console.log(
             `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
