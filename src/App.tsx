@@ -1,23 +1,136 @@
-import * as React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import React from 'react'
+import { ApolloProvider } from 'react-apollo'
+import { ApolloClient } from 'apollo-client'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import { HttpLink } from 'apollo-link-http'
+import { onError } from 'apollo-link-error'
+import { ApolloLink, Observable, Operation } from 'apollo-link'
+import { RootNavigator } from './routes'
+import { AsyncStorage, Alert } from 'react-native'
+import { split } from 'apollo-link'
+import { WebSocketLink } from 'apollo-link-ws'
+import { getMainDefinition } from 'apollo-utilities'
+import { createOfflineLink } from './offlineLink'
+import { CachePersistor } from 'apollo-cache-persist'
+import { Toast } from 'native-base'
+import { PendingMutationsProvider } from './Providers/PendingMutations'
+import { ToastProvider } from './Providers/Toast'
+import { Auth, AUTH_TOKEN } from './Providers/Auth'
+import { CurrentUserProvider } from './Providers/CurrentUser'
+import { IsOnlineProvider } from './Providers/IsOnline'
+import RegisterPushNotification from './components/RegisterPushNotification'
 
-export default class App extends React.Component<{}> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Open up src/App.js to start working on your app!</Text>
-        <Text>Changes you make will automatically reload.</Text>
-        <Text>Shake your phone to open the developer menu.</Text>
-      </View>
-    )
-  }
-}
+const cache = new InMemoryCache()
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+const offlineLink = createOfflineLink(cache)
+
+export const persistor = new CachePersistor({
+  cache,
+  storage: AsyncStorage as any,
+})
+
+// Create an env or json file & put the endpoints there
+const wsLink = new WebSocketLink({
+  uri: `ws://192.168.0.13:4000/`,
+  options: {
+    reconnect: true,
   },
 })
+
+const httpLink = new HttpLink({
+  uri: `http://192.168.0.13:4000/`,
+  credentials: 'same-origin',
+})
+
+const link = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query)
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    )
+  },
+  wsLink,
+  httpLink
+)
+
+const request = async (operation: Operation) => {
+  const token = await AsyncStorage.getItem(AUTH_TOKEN)
+  operation.setContext({
+    headers: {
+      authorization: token,
+    },
+  })
+}
+
+const requestLink = new ApolloLink(
+  (operation, forward) =>
+    new Observable(observer => {
+      let handle: ZenObservable.Subscription
+      Promise.resolve(operation)
+        .then(oper => request(oper))
+        .then(() => {
+          if (!forward) {
+            return
+          }
+          handle = forward(operation).subscribe({
+            next: observer.next.bind(observer),
+            error: observer.error.bind(observer),
+            complete: observer.complete.bind(observer),
+          })
+        })
+        .catch(observer.error.bind(observer))
+
+      return () => {
+        if (handle) handle.unsubscribe()
+      }
+    })
+)
+
+const client = new ApolloClient({
+  link: ApolloLink.from([
+    onError(({ graphQLErrors, networkError }) => {
+      if (graphQLErrors) {
+        const message = graphQLErrors.reduce((prev, curr) => {
+          return prev + curr.message + '. '
+        }, '')
+        Alert.alert('Error', message)
+        graphQLErrors.map(({ message, locations, path }) =>
+          console.log(
+            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+          )
+        )
+      }
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`)
+      }
+    }),
+    offlineLink,
+    requestLink,
+    link,
+  ]),
+  cache,
+})
+
+export default () => (
+  <ApolloProvider client={client}>
+    <ToastProvider value={Toast}>
+      <IsOnlineProvider>
+        <PendingMutationsProvider>
+          <Auth>
+            {isSignedIn =>
+              isSignedIn ? (
+                <CurrentUserProvider>
+                  <RegisterPushNotification />
+                  <RootNavigator isSignedIn={isSignedIn} />
+                </CurrentUserProvider>
+              ) : (
+                <RootNavigator isSignedIn={isSignedIn} />
+              )
+            }
+          </Auth>
+        </PendingMutationsProvider>
+      </IsOnlineProvider>
+    </ToastProvider>
+  </ApolloProvider>
+)
