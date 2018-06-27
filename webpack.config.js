@@ -101,7 +101,10 @@ const tsLoaderConfiguration = {
 
 module.exports = {
   // your web-specific entry file
-  entry: path.resolve(appDirectory, 'src/index'),
+  entry: [
+    path.resolve(appDirectory, 'src/index'),
+    'antd-mobile/dist/antd-mobile.css',
+  ],
   devtool: 'eval',
 
   // configures where the build ends up
@@ -147,6 +150,7 @@ module.exports = {
       '@expo/vector-icons': 'expo-web',
       expo: 'expo-web',
       'react-native': 'react-native-web',
+      'antd-mobile-rn': 'antd-mobile',
     },
   },
 }

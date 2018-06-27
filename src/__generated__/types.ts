@@ -56,7 +56,7 @@ export interface MeQuery {
       __typename: 'Notifications'
       fireWhen: number
       devices: Array<string>
-    } | null
+    }
     permissions: Array<UserPermissions>
     isAdmin: boolean | null
   } | null
@@ -82,7 +82,7 @@ export interface LoginMutation {
         __typename: 'Notifications'
         fireWhen: number
         devices: Array<string>
-      } | null
+      }
       permissions: Array<UserPermissions>
       isAdmin: boolean | null
     } | null
@@ -262,7 +262,7 @@ export interface getUsersQuery {
       __typename: 'Notifications'
       fireWhen: number
       devices: Array<string>
-    } | null
+    }
     permissions: Array<UserPermissions>
     isAdmin: boolean | null
   }>
@@ -283,7 +283,7 @@ export interface UserSubscription {
         __typename: 'Notifications'
         fireWhen: number
         devices: Array<string>
-      } | null
+      }
       permissions: Array<UserPermissions>
       isAdmin: boolean | null
     } | null
@@ -310,7 +310,7 @@ export interface CreateUserMutation {
       __typename: 'Notifications'
       fireWhen: number
       devices: Array<string>
-    } | null
+    }
     permissions: Array<UserPermissions>
     isAdmin: boolean | null
   } | null
@@ -337,7 +337,7 @@ export interface UpdateUserMutation {
       __typename: 'Notifications'
       fireWhen: number
       devices: Array<string>
-    } | null
+    }
     permissions: Array<UserPermissions>
     isAdmin: boolean | null
   } | null
@@ -400,7 +400,7 @@ export interface UserFragment {
     __typename: 'Notifications'
     fireWhen: number
     devices: Array<string>
-  } | null
+  }
   permissions: Array<UserPermissions>
   isAdmin: boolean | null
 }

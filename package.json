@@ -72,6 +72,7 @@
   },
   "dependencies": {
     "antd-mobile": "^2.2.0",
+    "antd-mobile-rn": "^2.2.0",
     "apollo-cache-inmemory": "^1.2.5",
     "apollo-cache-persist": "^0.1.1",
     "apollo-client": "^2.3.5",

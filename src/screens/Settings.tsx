@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, Alert } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { Content, List, ListItem, Text, Body, Right, Icon } from 'native-base'
 import { withNavigation, NavigationScreenProps } from 'react-navigation'
 import { compose } from 'react-apollo'
@@ -9,12 +9,16 @@ import {
   withRemoveDeviceToken,
   RemoveDeviceTokenMutationProps,
 } from '../HOCs'
-// import { Prompt } from '../components/Prompt'
 import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 import { withAuth, WithAuthProps } from '../Providers/Auth'
 import { Notifications } from 'expo'
 import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
 import { alert } from '../components/alert'
+import { Modal } from 'antd-mobile-rn'
+import { UpdateUserMutation, MeQuery } from '../__generated__/types'
+import { ME_QUERY } from '../queries'
+
+const { prompt } = Modal
 
 type SettingsProps = WithCurrentUserProps &
   NavigationScreenProps<{}> &
@@ -42,7 +46,6 @@ class Settings extends Component<SettingsProps, SettingsState> {
             {this._renderNotification()}
             {this._renderCurrentUser()}
             {this._renderSignOut()}
-            {this._renderPrompt()}
           </List>
         </Content>
       </View>
@@ -53,6 +56,7 @@ class Settings extends Component<SettingsProps, SettingsState> {
     if (!this.props.currentUser) {
       return
     }
+
     const {
       currentUser: { notifications },
     } = this.props
@@ -61,7 +65,17 @@ class Settings extends Component<SettingsProps, SettingsState> {
         <ListItem itemDivider>
           <Text style={styles.marginTop}>Notificaciones</Text>
         </ListItem>
-        <ListItem onPress={() => this.setState({ promptVisible: true })}>
+        <ListItem
+          onPress={() =>
+            prompt(
+              'Notificaciones',
+              '',
+              [{ text: 'aceptar', onPress: this._onPromptSubmit }],
+              null,
+              notifications.fireWhen
+            )
+          }
+        >
           <Body>
             <Text>Avisar cuando un producto tenga menos de: </Text>
           </Body>
@@ -119,55 +133,51 @@ class Settings extends Component<SettingsProps, SettingsState> {
     )
   }
 
-  _renderPrompt = () => {
-    if (!this.props.currentUser) {
+  _onPromptSubmit = (quantity: string) => {
+    const { updateUser, currentUser } = this.props
+    if (!currentUser) {
       return
     }
 
-    const {
-      currentUser: { notifications },
-    } = this.props
-    const { promptVisible } = this.state
+    const fireWhen = Number(quantity) || 0
 
-    return null
-    // <Prompt
-    //   visible={promptVisible}
-    //   value={notifications ? notifications.fireWhen : defaultFireWhen}
-    //   submitText="Actualizar"
-    //   close={() => this.setState({ promptVisible: false })}
-    //   onSubmit={value => this._onPromptSubmit(value)}
-    // />
-  }
+    updateUser({
+      variables: {
+        userId: currentUser.id,
+        notifications: {
+          fireWhen,
+        },
+      },
+      optimisticResponse: {
+        updateUser: {
+          __typename: 'User',
+          ...currentUser,
+          notifications: {
+            __typename: 'Notifications',
+            devices: currentUser.notifications.devices,
+            fireWhen,
+          },
+        },
+      },
+      update(proxy, result) {
+        if (!result.data) {
+          return
+        }
+        const { updateUser } = result.data as UpdateUserMutation
 
-  _onPromptSubmit = (quantity: string) => {
-    // const { updateUser, currentUser } = this.props
-    // const fireWhen = Number(quantity) || 0
-    // updateUser({
-    //   variables: {
-    //     userId: currentUser.id,
-    //     notifications: {
-    //       fireWhen,
-    //     },
-    //   },
-    //   optimisticResponse: {
-    //     updateUser: {
-    //       ...currentUser,
-    //       notifications: {
-    //         __typename: 'Notifications',
-    //         devices: currentUser.notifications.devices,
-    //         fireWhen,
-    //       },
-    //     },
-    //   },
-    //   update(proxy) {
-    //     const { notifications } = currentUser
-    //     currentUser.notifications = {
-    //       __typename: 'Notifications',
-    //       fireWhen,
-    //       devices: notifications ? notifications.devices : [],
-    //     }
-    //   },
-    // })
+        if (!updateUser) {
+          return
+        }
+
+        let data = proxy.readQuery({
+          query: ME_QUERY,
+        }) as MeQuery
+
+        data.me = updateUser
+
+        proxy.writeQuery({ query: ME_QUERY, data })
+      },
+    })
   }
 
   _signOut = async () => {

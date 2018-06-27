@@ -208,9 +208,13 @@
               "description": "",
               "args": [],
               "type": {
-                "kind": "OBJECT",
-                "name": "Notifications",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Notifications",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null

@@ -1,5 +1,5 @@
-import { Modal } from 'antd-mobile'
-import { Action } from '../../node_modules/antd-mobile/lib/modal/PropsType'
+import { Modal } from 'antd-mobile-rn'
+import { Action } from '../../node_modules/antd-mobile-rn/lib/modal/PropsType'
 
 const { alert: rawAlert } = Modal
 

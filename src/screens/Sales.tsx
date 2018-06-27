@@ -7,12 +7,12 @@ import { compose } from 'react-apollo'
 import { FetchError } from '../components/FetchError'
 import { moment, getSaleStatistics } from '../utils'
 import sortBy from 'lodash/sortBy'
-import { SALE_SUBSCRIPTION } from '../queries'
-import {
-  getSalesQuery,
-  MutationType,
-  SaleSubscription,
-} from '../__generated__/types'
+// import { SALE_SUBSCRIPTION } from '../queries'
+// import {
+//   getSalesQuery,
+//   MutationType,
+//   SaleSubscription,
+// } from '../__generated__/types'
 import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
 
 type SalesProps = NavigationScreenProps & SalesQueryProp & WithIsOnlineProps
