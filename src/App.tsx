@@ -20,6 +20,11 @@ import { CurrentUserProvider } from './Providers/CurrentUser'
 import { IsOnlineProvider } from './Providers/IsOnline'
 import RegisterPushNotification from './components/RegisterPushNotification'
 import { alert } from './components/alert'
+import { HTTP_ENDPOINT, WS_ENDPOINT } from 'react-native-dotenv'
+
+if (!HTTP_ENDPOINT || !WS_ENDPOINT) {
+  throw new Error('Invalidad endpoints')
+}
 
 const cache = new InMemoryCache()
 
@@ -32,14 +37,14 @@ export const persistor = new CachePersistor({
 
 // Create an env or json file & put the endpoints there
 const wsLink = new WebSocketLink({
-  uri: `ws://192.168.0.13:4000/`,
+  uri: WS_ENDPOINT,
   options: {
     reconnect: true,
   },
 })
 
 const httpLink = new HttpLink({
-  uri: `http://192.168.0.13:4000/`,
+  uri: HTTP_ENDPOINT,
   credentials: 'same-origin',
 })
 

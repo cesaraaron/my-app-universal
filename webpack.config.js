@@ -91,12 +91,21 @@ const ttfLoaderConfiguration = {
 
 const tsLoaderConfiguration = {
   test: /\.tsx?$/,
-  use: {
-    loader: 'ts-loader',
-    options: {
-      configFile: 'tsconfig.web.json',
+  use: [
+    {
+      loader: 'babel-loader',
+      options: {
+        babelrc: false,
+        presets: ['react-native-dotenv'],
+      },
     },
-  },
+    {
+      loader: 'ts-loader',
+      options: {
+        configFile: 'tsconfig.web.json',
+      },
+    },
+  ],
 }
 
 module.exports = {

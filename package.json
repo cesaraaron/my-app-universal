@@ -37,12 +37,12 @@
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry-web.js",
   "scripts": {
-    "start": "react-native-scripts-ts start",
+    "start": "node scripts/updateEndpoints && react-native-scripts-ts start",
     "eject": "react-native-scripts-ts eject",
     "android": "react-native-scripts-ts android",
     "ios": "react-native-scripts-ts ios",
     "test": "jest",
-    "web": "webpack-dev-server -d --config ./webpack.config.js  --inline --hot --colors --content-base public/ --history-api-fallback",
+    "web": "node scripts/updateEndpoints && webpack-dev-server -d --config ./webpack.config.js  --inline --hot --colors --content-base public/ --history-api-fallback",
     "build": "NODE_ENV=production webpack -p --config ./webpack.config.js",
     "generate": "apollo-codegen introspect-schema http://localhost:4000 --output src/schema.json && apollo-codegen generate ./src/queries.ts --add-typename --schema ./src/schema.json --target typescript --output ./src/__generated__/types.ts",
     "precommit": "lint-staged"
