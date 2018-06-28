@@ -6,10 +6,11 @@ const { alert: rawAlert } = Modal
 export const alert = (
   title: string,
   message: string,
-  actions?: Action<React.CSSProperties>[] | undefined
+  actions?: Action<React.CSSProperties>[] | undefined,
+  ...rest: any[]
 ) => {
   if (!actions) {
     actions = [{ text: 'Ok' }]
   }
-  rawAlert(title, message, actions)
+  rawAlert(title, message, actions, ...rest)
 }

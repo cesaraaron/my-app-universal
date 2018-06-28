@@ -1,5 +1,4 @@
 import React from 'react'
-// import Database from './screens/Database'
 import {
   StackNavigator,
   TabNavigator,
@@ -11,11 +10,12 @@ import {
 import { Platform } from 'react-native'
 import { Icon, View } from 'native-base'
 import Login from './screens/Login'
+import Database from './screens/Database'
+import AddProduct from './screens/AddProduct'
 import Settings from './screens/Settings'
 // import Users from './screens/Users'
 // import AddUser from './screens/AddUser'
-// import AddProduct from './screens/AddProduct'
-// import AddSale from './screens/AddSale'
+import AddSale from './screens/AddSale'
 import Sales from './screens/Sales'
 // import Statistics from './screens/Statistics'
 // import { OfflineBanner, IsOnlineConsumer } from './Providers/IsOnline'
@@ -54,8 +54,8 @@ const stackOptions = {
 
 const Home = TabNavigator(
   {
-    Sales: StackNavigator({ Sales /* AddSale */ }, stackOptions),
-    // Database: StackNavigator({ Database, AddProduct }, stackOptions),
+    Sales: StackNavigator({ Sales, AddSale }, stackOptions),
+    Database: StackNavigator({ Database, AddProduct }, stackOptions),
     // Statistics: StackNavigator({ Statistics }, stackOptions),
     Settings: StackNavigator({ Settings /* , Users, AddUser */ }, stackOptions),
   },

@@ -177,7 +177,7 @@ export interface getSalesQuery {
       name: string
       price: number
       quantitySold: number
-    }> | null
+    }>
     soldBy: {
       __typename: 'User'
       id: string
@@ -202,7 +202,7 @@ export interface SaleSubscription {
         name: string
         price: number
         quantitySold: number
-      }> | null
+      }>
       soldBy: {
         __typename: 'User'
         id: string
@@ -229,7 +229,7 @@ export interface CreateSaleMutation {
       name: string
       price: number
       quantitySold: number
-    }> | null
+    }>
     soldBy: {
       __typename: 'User'
       id: string
@@ -426,7 +426,7 @@ export interface SaleFragment {
     name: string
     price: number
     quantitySold: number
-  }> | null
+  }>
   soldBy: {
     __typename: 'User'
     id: string
