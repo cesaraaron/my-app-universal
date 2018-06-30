@@ -4,25 +4,42 @@ import Loading from '../components/Loading'
 import { Query } from 'react-apollo'
 import { MeQuery as MeQueryData } from '../__generated__/types'
 import { ME_QUERY } from '../queries'
+import { FetchError } from '../components/FetchError'
 
 class MeQuery extends Query<MeQueryData> {}
 
 type UserContextValue = {
-  currentUser: UserType | null
+  currentUser: UserType
 }
 
-const UserContext = React.createContext<UserContextValue>({ currentUser: null })
+const UserContext = React.createContext<UserContextValue>({
+  currentUser: {
+    __typename: 'User',
+    id: '',
+    createdAt: '',
+    updatedAt: '',
+    isAdmin: false,
+    name: '',
+    notifications: { __typename: 'Notifications', devices: [], fireWhen: 0 },
+    permissions: [],
+    phoneNumber: '',
+  },
+})
 
 type CurrentUserProps = {
-  children: JSX.Element | JSX.Element[]
+  children: JSX.Element | (JSX.Element | null)[]
 }
 
 export const CurrentUserProvider = ({ children }: CurrentUserProps) => (
   <MeQuery query={ME_QUERY} errorPolicy="all">
-    {({ loading, data }) => {
-      if (loading || !data) {
+    {({ loading, data, error, refetch }) => {
+      if (loading || !data || !data.me) {
         return <Loading />
       }
+      if (error) {
+        return <FetchError error={error} refetch={refetch} />
+      }
+
       return (
         <UserContext.Provider value={{ currentUser: data.me }}>
           {children}

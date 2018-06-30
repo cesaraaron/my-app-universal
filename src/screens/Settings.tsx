@@ -53,10 +53,6 @@ class Settings extends Component<SettingsProps, SettingsState> {
   }
 
   _renderNotification = () => {
-    if (!this.props.currentUser) {
-      return
-    }
-
     const {
       currentUser: { notifications },
     } = this.props
@@ -97,7 +93,7 @@ class Settings extends Component<SettingsProps, SettingsState> {
   _renderCurrentUser = () => {
     const { navigation, currentUser } = this.props
 
-    if (currentUser && !currentUser.isAdmin) {
+    if (!currentUser.isAdmin) {
       return null
     }
 

@@ -220,10 +220,6 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
   ) => {
     const { createProduct, isOnline, addId, removeId, currentUser } = this.props
 
-    if (!currentUser) {
-      return
-    }
-
     if (
       !currentUser.isAdmin &&
       !currentUser.permissions.includes(UserPermissions.ADD_PRODUCTS)
@@ -297,7 +293,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
     const { updateProduct, isOnline, addId, removeId, currentUser } = this.props
     const { productId, product } = this.state
 
-    if (!currentUser || !productId || !product) {
+    if (!productId || !product) {
       return
     }
 
@@ -375,7 +371,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
     const { navigation, deleteProduct, entries, currentUser } = this.props
     const { productId, product } = this.state
 
-    if (!currentUser || !productId || !product) {
+    if (!productId || !product) {
       return
     }
 

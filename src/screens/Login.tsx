@@ -29,7 +29,6 @@ type LoginState = {
 
 type LoginProps = LoginMutationProps & WithAuthProps & WithIsOnlineProps
 
-// TODO: show no internet connection banner below <Header />
 class Login extends Component<LoginProps, LoginState> {
   state = {
     phoneNumber: '',

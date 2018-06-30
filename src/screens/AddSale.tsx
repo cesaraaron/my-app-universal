@@ -394,10 +394,6 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     } = this.props
     const { cartProducts, products } = this.state
 
-    if (!currentUser) {
-      return
-    }
-
     if (!cartProducts.length) {
       alert(
         'Error',
@@ -490,7 +486,7 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     const { deleteSale, currentUser, navigation, entries } = this.props
     const { sale } = this.state
 
-    if (!currentUser || !sale) {
+    if (!sale) {
       return
     }
 
