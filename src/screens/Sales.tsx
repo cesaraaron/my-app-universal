@@ -90,19 +90,15 @@ class Sales extends Component<SalesProps> {
       document: SALE_SUBSCRIPTION,
       updateQuery: (
         prev: getSalesQuery,
-        { subscriptionData: { data } }
+        {
+          subscriptionData: { data },
+        }: { subscriptionData: { data: SaleSubscription } }
       ): getSalesQuery => {
-        if (!data) {
+        if (!data.sale) {
           return prev
         }
 
-        const saleSubscription = (data as SaleSubscription).sale
-
-        if (!saleSubscription) {
-          return prev
-        }
-
-        const { node, mutation } = saleSubscription
+        const { node, mutation } = data.sale
 
         // If there is no node sent it is probably a deleted mutation
         // primsa does not send currently a node when deleting an entry.

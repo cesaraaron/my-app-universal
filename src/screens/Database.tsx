@@ -131,6 +131,8 @@ class Database extends Component<DatabaseProps, DatabaseState> {
         }
         const { mutation, node } = data.product
 
+        // If there is no node sent it is probably a deleted mutation
+        // primsa does not send currently a node when deleting an entry.
         if (!node) {
           return prev
         }

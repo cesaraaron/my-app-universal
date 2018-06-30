@@ -10,7 +10,7 @@ import {
   View,
   Button,
 } from 'native-base'
-import { TextInput } from 'react-native'
+import { TextInput, Keyboard } from 'react-native'
 import { NavigationScreenProps, withNavigation } from 'react-navigation'
 import {
   ProductsQueryProps,
@@ -22,7 +22,7 @@ import {
   withDeleteSale,
   createWithProducts,
 } from '../HOCs'
-import { searchProductWithQuery, ID } from '../utils'
+import { searchProductWithQuery, ID, isWeb } from '../utils'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
 import { compose } from 'react-apollo'
@@ -79,6 +79,8 @@ type AddSaleState = {
 }
 
 class AddSale extends Component<AddSaleProps, AddSaleState> {
+  searchInput?: TextInput
+
   static getDerivedStateFromProps({
     feedProducts,
   }: AddSaleProps): Partial<AddSaleState> | null {
@@ -131,7 +133,12 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
       <Container>
         {saleId ? null : (
           <TextInput
-            autoFocus
+            ref={node => {
+              if (!node) {
+                return
+              }
+              this.searchInput = node
+            }}
             value={query}
             style={{ fontSize: 17, padding: 10, paddingVertical: 20 }}
             autoCapitalize="none"
@@ -177,6 +184,9 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
             <ListItem
               key={product.id}
               onPress={() => {
+                if (!isWeb) {
+                  Keyboard.dismiss()
+                }
                 prompt(
                   'Cantidad a vender',
                   '',
@@ -221,30 +231,35 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
             <ListItem
               key={cartProduct.productId}
               onPress={() => {
-                if (!saleId) {
-                  prompt(
-                    'Modificar cantidad',
-                    '',
-                    [
-                      {
-                        text: 'Eliminar del carrito',
-                        onPress: () =>
-                          this._deleteProductFromCart(cartProduct.productId),
-                      },
-                      {
-                        text: 'Actualizar',
-                        onPress: (quantity: string) =>
-                          this._addProductToCart({
-                            productId: cartProduct.productId,
-                            quantity: parseInt(quantity),
-                            initialQuantity: cartProduct.quantitySold,
-                          }),
-                      },
-                    ],
-                    null,
-                    cartProduct.quantitySold
-                  )
+                if (saleId) {
+                  return
                 }
+                if (!isWeb) {
+                  Keyboard.dismiss()
+                }
+
+                prompt(
+                  'Modificar cantidad',
+                  '',
+                  [
+                    {
+                      text: 'Eliminar',
+                      onPress: () =>
+                        this._deleteProductFromCart(cartProduct.productId),
+                    },
+                    {
+                      text: 'Actualizar',
+                      onPress: (quantity: string) =>
+                        this._addProductToCart({
+                          productId: cartProduct.productId,
+                          quantity: parseInt(quantity),
+                          initialQuantity: cartProduct.quantitySold,
+                        }),
+                    },
+                  ],
+                  null,
+                  String(cartProduct.quantitySold)
+                )
               }}
             >
               <Body>
@@ -335,12 +350,14 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     const productToAddName = productToAdd.name
 
     if (quantityToAdd > quantityAvailable) {
-      alert(
-        '',
-        quantityAvailable === 0
-          ? `El producto "${productToAddName}" tiene 0 unidades disponibles`
-          : `El producto "${productToAddName}" solo tiene "${quantityAvailable}" unidades disponibles en el inventario. Usted esta intentado agregar "${quantityToAdd}".`
-      )
+      setTimeout(() => {
+        alert(
+          '',
+          quantityAvailable === 0
+            ? `El producto "${productToAddName}" tiene 0 unidades disponibles`
+            : `El producto "${productToAddName}" solo tiene "${quantityAvailable}" unidades disponibles en el inventario. Usted esta intentado agregar "${quantityToAdd}".`
+        )
+      }, 1000)
       return
     }
 
@@ -447,25 +464,10 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
             '',
             'Esta venta se guardara hasta que la conneción a internet se restablesca'
           )
-          // Toast.show({
-          //   text:
-          //     ,
-          //   type: 'warning',
-          //   duration: 8000,
-          //   buttonText: 'Ok',
-          // })
         }
 
         if (!createSale.__optimistic) {
           removeId(optimisticId)
-
-          alert('', `La venta con id ${createSale.id} fue creada exitosamente`)
-          // Toast.show({
-          //   text: ,
-          //   type: 'success',
-          //   duration: 8000,
-          //   buttonText: 'Ok',
-          // })
         }
 
         const data = proxy.readQuery({ query: GET_SALES }) as getSalesQuery
