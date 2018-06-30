@@ -33,7 +33,6 @@ import {
 } from '../__generated__/types'
 import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
 import { OptimisticProp } from '../types'
-import { withToast, WithToastProps } from '../Providers/Toast'
 import {
   PendingMutationsInjectProps,
   withPendingMutations,
@@ -47,7 +46,6 @@ type AddProductProps = CreateProductMutationProp &
   NavigationScreenProps<{ product: ProductType & OptimisticProp }> &
   WithIsOnlineProps &
   WithCurrentUserProps &
-  WithToastProps &
   PendingMutationsInjectProps
 
 type InitialValues = {
@@ -220,14 +218,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
     { name, price, quantity }: InitialValues,
     opts: FormikActions<InitialValues>
   ) => {
-    const {
-      createProduct,
-      Toast,
-      isOnline,
-      addId,
-      removeId,
-      currentUser,
-    } = this.props
+    const { createProduct, isOnline, addId, removeId, currentUser } = this.props
 
     if (!currentUser) {
       return
@@ -276,25 +267,19 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
         if (!isOnline && createProduct.__optimistic) {
           addId(optimisticId, true)
 
-          Toast.show({
-            text: `Este producto se guardará hasta que la conneción a internet se restablezca.`,
-            type: 'warning',
-            duration: 8000,
-            buttonText: 'Ok',
-          })
+          alert(
+            '',
+            `Este producto se guardará hasta que la conneción a internet se restablezca.`
+          )
         }
 
         if (!createProduct.__optimistic) {
           removeId(optimisticId)
 
-          Toast.show({
-            text: `El producto "${
-              createProduct.name
-            }" fue creado exitosamente.`,
-            type: 'success',
-            duration: 8000,
-            buttonText: 'Ok',
-          })
+          alert(
+            '',
+            `El producto "${createProduct.name}" fue creado exitosamente.`
+          )
         }
 
         let data = proxy.readQuery({
@@ -309,14 +294,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
   }
 
   _updateProduct = (values: InitialValues) => {
-    const {
-      updateProduct,
-      Toast,
-      isOnline,
-      addId,
-      removeId,
-      currentUser,
-    } = this.props
+    const { updateProduct, isOnline, addId, removeId, currentUser } = this.props
     const { productId, product } = this.state
 
     if (!currentUser || !productId || !product) {
@@ -360,26 +338,18 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
 
         if (!isOnline && updateProduct.__optimistic) {
           addId(productId)
-
-          Toast.show({
-            text: `Los cambios a este producto serán guardados hasta que la conneción se restablesca.`,
-            type: 'warning',
-            duration: 8000,
-            buttonText: 'Ok',
-          })
+          alert(
+            '',
+            '`Los cambios a este producto serán guardados hasta que la conneción se restablesca.`'
+          )
         }
 
         if (!updateProduct.__optimistic) {
           removeId(productId)
-
-          Toast.show({
-            text: `El producto "${
-              updateProduct.name
-            }" fue guardado exitosamente`,
-            type: 'success',
-            duration: 8000,
-            buttonText: 'Ok',
-          })
+          alert(
+            '',
+            `El producto "${updateProduct.name}"\n fue guardado exitosamente`
+          )
         }
 
         let data = store.readQuery({
@@ -474,7 +444,6 @@ const EnhancedAddProduct = compose(
   withUpdateProduct,
   withDeleteProduct,
   withIsOnline,
-  withToast,
   withPendingMutations
 )(AddProduct)
 

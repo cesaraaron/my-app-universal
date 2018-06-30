@@ -85,6 +85,11 @@ class Settings extends Component<SettingsProps, SettingsState> {
             </Text>
           </Right>
         </ListItem>
+        <ListItem itemDivider>
+          <Text note style={{ fontStyle: 'italic' }}>
+            Si no quieres recibir notificaciones deja el valor en cero.
+          </Text>
+        </ListItem>
       </React.Fragment>
     )
   }

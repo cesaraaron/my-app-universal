@@ -35,7 +35,6 @@ import {
 import { GET_SALES, GET_PRODUCTS } from '../queries'
 import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
 import { OptimisticProp } from '../types'
-import { withToast, WithToastProps } from '../Providers/Toast'
 import {
   withPendingMutations,
   PendingMutationsInjectProps,
@@ -60,7 +59,6 @@ type AddSaleProps = NavigationScreenProps<{ sale: SaleType & OptimisticProp }> &
   CreateSaleMutationProp &
   DeleteSaleMutationProp &
   WithIsOnlineProps &
-  WithToastProps &
   PendingMutationsInjectProps
 
 type CartProductWithTypeName = SaleType['products'][0]
@@ -326,7 +324,6 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     quantity,
     initialQuantity = 0,
   }: addProductToCart) => {
-    const { Toast } = this.props
     const { cartProducts, products } = this.state
 
     const quantityToAdd = quantity || 1
@@ -338,14 +335,12 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     const productToAddName = productToAdd.name
 
     if (quantityToAdd > quantityAvailable) {
-      Toast.show({
-        text:
-          quantityAvailable === 0
-            ? `El producto "${productToAddName}" tiene 0 unidades disponibles`
-            : `El producto "${productToAddName}" solo tiene "${quantityAvailable}" unidades disponibles en el inventario. Usted esta intentado agregar "${quantityToAdd}".`,
-        duration: 8000,
-        buttonText: 'Ok',
-      })
+      alert(
+        '',
+        quantityAvailable === 0
+          ? `El producto "${productToAddName}" tiene 0 unidades disponibles`
+          : `El producto "${productToAddName}" solo tiene "${quantityAvailable}" unidades disponibles en el inventario. Usted esta intentado agregar "${quantityToAdd}".`
+      )
       return
     }
 
@@ -393,7 +388,6 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
       createSale,
       currentUser,
       navigation,
-      Toast,
       isOnline,
       addId,
       removeId,
@@ -453,24 +447,29 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
         if (!isOnline && createSale.__optimistic) {
           addId(optimisticId, true)
-          Toast.show({
-            text:
-              'Esta venta se guardara hasta que la conneción a internet se restablesca',
-            type: 'warning',
-            duration: 8000,
-            buttonText: 'Ok',
-          })
+          alert(
+            '',
+            'Esta venta se guardara hasta que la conneción a internet se restablesca'
+          )
+          // Toast.show({
+          //   text:
+          //     ,
+          //   type: 'warning',
+          //   duration: 8000,
+          //   buttonText: 'Ok',
+          // })
         }
 
         if (!createSale.__optimistic) {
           removeId(optimisticId)
 
-          Toast.show({
-            text: `La venta con id ${createSale.id} fue creada exitosamente`,
-            type: 'success',
-            duration: 8000,
-            buttonText: 'Ok',
-          })
+          alert('', `La venta con id ${createSale.id} fue creada exitosamente`)
+          // Toast.show({
+          //   text: ,
+          //   type: 'success',
+          //   duration: 8000,
+          //   buttonText: 'Ok',
+          // })
         }
 
         const data = proxy.readQuery({ query: GET_SALES }) as getSalesQuery
@@ -559,7 +558,6 @@ const EnhancedAddSale = compose(
   withCreateSale,
   withDeleteSale,
   withIsOnline,
-  withToast,
   withPendingMutations
 )(AddSale)
 

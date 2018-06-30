@@ -15,6 +15,5 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true
-  },
-  "files": ["./globals.d.ts"]
+  }
 }

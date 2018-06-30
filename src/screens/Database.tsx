@@ -181,8 +181,8 @@ EnhancedDatabase.navigationOptions = ({
     headerRight: (
       <Button transparent onPress={() => navigation.navigate('AddProduct')}>
         <Icon
-          name="add"
-          type="MaterialIcons"
+          name="plus"
+          type="Entypo"
           style={Platform.OS === 'android' ? { color: 'white' } : null}
         />
       </Button>

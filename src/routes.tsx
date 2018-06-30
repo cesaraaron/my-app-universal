@@ -22,7 +22,7 @@ import Sales from './screens/Sales'
 import { IsOnlineConsumer, OfflineBanner } from './Providers/IsOnline'
 import { isWeb } from './utils'
 
-type IconType = 'MaterialCommunityIcons' | 'Ionicons' | 'FontAwesome'
+type IconType = 'MaterialCommunityIcons' | 'Ionicons' | 'FontAwesome' | 'Entypo'
 
 const androidNavigationOptions =
   Platform.OS === 'android'
@@ -91,7 +91,7 @@ const Home = TabNavigator(
         case 'Database':
           label = 'Base de datos'
           iconName = 'database'
-          iconType = 'MaterialCommunityIcons'
+          iconType = 'Entypo'
           break
         case 'Statistics':
           label = 'Estadisticas'

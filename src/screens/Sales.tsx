@@ -131,8 +131,8 @@ EnhancedSales.navigationOptions = ({ navigation }: NavigationScreenProps) => {
     headerRight: (
       <Button transparent onPress={() => navigation.navigate('AddSale')}>
         <Icon
-          name="add"
-          type="MaterialIcons"
+          name="plus"
+          type="Entypo"
           style={Platform.OS === 'android' ? { color: 'white' } : null}
         />
       </Button>
