@@ -222,7 +222,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
 
     if (
       !currentUser.isAdmin &&
-      !currentUser.permissions.includes(UserPermissions.ADD_PRODUCTS)
+      !currentUser.permissions.includes(UserPermissions.CREATE_PRODUCTS)
     ) {
       alert(
         'Acceso denegado',
@@ -299,7 +299,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
 
     if (
       !currentUser.isAdmin &&
-      !currentUser.permissions.includes(UserPermissions.EDIT_PRODUCTS)
+      !currentUser.permissions.includes(UserPermissions.UPDATE_PRODUCTS)
     ) {
       alert(
         'Acceso denegado',

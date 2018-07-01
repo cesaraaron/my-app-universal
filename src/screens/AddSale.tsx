@@ -347,15 +347,15 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
     let quantityAvailable = productToAdd.quantity + initialQuantity
 
-    const productToAddName = productToAdd.name
-
     if (quantityToAdd > quantityAvailable) {
       setTimeout(() => {
         alert(
           '',
           quantityAvailable === 0
-            ? `El producto "${productToAddName}" tiene 0 unidades disponibles`
-            : `El producto "${productToAddName}" solo tiene "${quantityAvailable}" unidades disponibles en el inventario. Usted esta intentado agregar "${quantityToAdd}".`
+            ? `El producto "${productToAdd.name}" tiene 0 unidades disponibles`
+            : `El producto "${
+                productToAdd.name
+              }" solo tiene "${quantityAvailable}" unidades disponibles en el inventario. Usted esta intentado agregar "${quantityToAdd}".`
         )
       }, 1000)
       return
@@ -421,7 +421,7 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
     if (
       !currentUser.isAdmin &&
-      !currentUser.permissions.includes(UserPermissions.ADD_SALES)
+      !currentUser.permissions.includes(UserPermissions.CREATE_SALES)
     ) {
       alert(
         'Acceso denegado',

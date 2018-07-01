@@ -43,11 +43,11 @@ import {
 import { alert } from '../components/alert'
 
 const {
-  ADD_PRODUCTS,
-  ADD_SALES,
+  CREATE_PRODUCTS,
+  UPDATE_PRODUCTS,
   DELETE_PRODUCTS,
+  CREATE_SALES,
   DELETE_SALES,
-  EDIT_PRODUCTS,
 } = UserPermissions
 
 type AddUserProps = NavigationScreenProps<{
@@ -208,13 +208,13 @@ class AddUser extends Component<AddUserProps, AddUserState> {
                             </Body>
                             <Right>
                               <Switch
-                                value={permissions.includes(ADD_SALES)}
+                                value={permissions.includes(CREATE_SALES)}
                                 onValueChange={val => {
                                   if (val) {
-                                    helper.push(ADD_SALES)
+                                    helper.push(CREATE_SALES)
                                   } else {
                                     helper.remove(
-                                      permissions.indexOf(ADD_SALES)
+                                      permissions.indexOf(CREATE_SALES)
                                     )
                                   }
                                 }}
@@ -246,13 +246,13 @@ class AddUser extends Component<AddUserProps, AddUserState> {
                             </Body>
                             <Right>
                               <Switch
-                                value={permissions.includes(ADD_PRODUCTS)}
+                                value={permissions.includes(CREATE_PRODUCTS)}
                                 onValueChange={val => {
                                   if (val) {
-                                    helper.push(ADD_PRODUCTS)
+                                    helper.push(CREATE_PRODUCTS)
                                   } else {
                                     helper.remove(
-                                      permissions.indexOf(ADD_PRODUCTS)
+                                      permissions.indexOf(CREATE_PRODUCTS)
                                     )
                                   }
                                 }}
@@ -265,13 +265,13 @@ class AddUser extends Component<AddUserProps, AddUserState> {
                             </Body>
                             <Right>
                               <Switch
-                                value={permissions.includes(EDIT_PRODUCTS)}
+                                value={permissions.includes(UPDATE_PRODUCTS)}
                                 onValueChange={val => {
                                   if (val) {
-                                    helper.push(EDIT_PRODUCTS)
+                                    helper.push(UPDATE_PRODUCTS)
                                   } else {
                                     helper.remove(
-                                      permissions.indexOf(EDIT_PRODUCTS)
+                                      permissions.indexOf(UPDATE_PRODUCTS)
                                     )
                                   }
                                 }}

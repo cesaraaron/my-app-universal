@@ -154,11 +154,11 @@ class Database extends Component<DatabaseProps, DatabaseState> {
                 }
               }),
             }
-          // case MutationType.DELETED:
-          //   return {
-          //     ...prev,
-          //     products: prev.products.filter(p => p.id !== node.id),
-          //   }
+          case MutationType.DELETED:
+            return {
+              ...prev,
+              products: prev.products.filter(p => p.id !== node.id),
+            }
           default:
             return prev
         }
