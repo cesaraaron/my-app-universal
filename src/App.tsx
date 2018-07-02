@@ -12,15 +12,14 @@ import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import { createOfflineLink } from './offlineLink'
 import { CachePersistor } from 'apollo-cache-persist'
-import { Toast } from 'native-base'
 import { PendingMutationsProvider } from './Providers/PendingMutations'
-import { ToastProvider } from './Providers/Toast'
 import { Auth, AUTH_TOKEN } from './Providers/Auth'
 import { CurrentUserProvider } from './Providers/CurrentUser'
 import { IsOnlineProvider } from './Providers/IsOnline'
 import RegisterPushNotification from './components/RegisterPushNotification'
 import { alert } from './components/alert'
 import { HTTP_ENDPOINT, WS_ENDPOINT } from 'react-native-dotenv'
+import { isWeb } from './utils'
 
 if (!HTTP_ENDPOINT || !WS_ENDPOINT) {
   throw new Error('Invalidad endpoints')
@@ -35,7 +34,6 @@ export const persistor = new CachePersistor({
   storage: AsyncStorage as any,
 })
 
-// Create an env or json file & put the endpoints there
 const wsLink = new WebSocketLink({
   uri: WS_ENDPOINT,
   options: {
@@ -120,23 +118,21 @@ const client = new ApolloClient({
 
 export default () => (
   <ApolloProvider client={client}>
-    <ToastProvider value={Toast}>
-      <IsOnlineProvider>
-        <PendingMutationsProvider>
-          <Auth>
-            {isSignedIn =>
-              isSignedIn ? (
-                <CurrentUserProvider>
-                  <RegisterPushNotification />
-                  <RootNavigator isSignedIn={isSignedIn} />
-                </CurrentUserProvider>
-              ) : (
+    <IsOnlineProvider>
+      <PendingMutationsProvider>
+        <Auth>
+          {isSignedIn =>
+            isSignedIn ? (
+              <CurrentUserProvider>
+                {isWeb ? null : <RegisterPushNotification />}
                 <RootNavigator isSignedIn={isSignedIn} />
-              )
-            }
-          </Auth>
-        </PendingMutationsProvider>
-      </IsOnlineProvider>
-    </ToastProvider>
+              </CurrentUserProvider>
+            ) : (
+              <RootNavigator isSignedIn={isSignedIn} />
+            )
+          }
+        </Auth>
+      </PendingMutationsProvider>
+    </IsOnlineProvider>
   </ApolloProvider>
 )

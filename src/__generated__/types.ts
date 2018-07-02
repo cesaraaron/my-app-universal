@@ -2,11 +2,11 @@
 //  This file was automatically generated and should not be edited.
 
 export enum UserPermissions {
-  ADD_PRODUCTS = 'ADD_PRODUCTS',
-  ADD_SALES = 'ADD_SALES',
+  CREATE_PRODUCTS = 'CREATE_PRODUCTS',
+  CREATE_SALES = 'CREATE_SALES',
   DELETE_PRODUCTS = 'DELETE_PRODUCTS',
   DELETE_SALES = 'DELETE_SALES',
-  EDIT_PRODUCTS = 'EDIT_PRODUCTS',
+  UPDATE_PRODUCTS = 'UPDATE_PRODUCTS',
 }
 
 export enum MutationType {

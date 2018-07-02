@@ -131,6 +131,8 @@ class Database extends Component<DatabaseProps, DatabaseState> {
         }
         const { mutation, node } = data.product
 
+        // If there is no node sent it is probably a deleted mutation
+        // primsa does not send currently a node when deleting an entry.
         if (!node) {
           return prev
         }
@@ -152,11 +154,11 @@ class Database extends Component<DatabaseProps, DatabaseState> {
                 }
               }),
             }
-          // case MutationType.DELETED:
-          //   return {
-          //     ...prev,
-          //     products: prev.products.filter(p => p.id !== node.id),
-          //   }
+          case MutationType.DELETED:
+            return {
+              ...prev,
+              products: prev.products.filter(p => p.id !== node.id),
+            }
           default:
             return prev
         }
@@ -181,8 +183,8 @@ EnhancedDatabase.navigationOptions = ({
     headerRight: (
       <Button transparent onPress={() => navigation.navigate('AddProduct')}>
         <Icon
-          name="add"
-          type="MaterialIcons"
+          name="plus"
+          type="Entypo"
           style={Platform.OS === 'android' ? { color: 'white' } : null}
         />
       </Button>

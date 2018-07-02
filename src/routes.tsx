@@ -13,16 +13,15 @@ import Login from './screens/Login'
 import Database from './screens/Database'
 import AddProduct from './screens/AddProduct'
 import Settings from './screens/Settings'
-// import Users from './screens/Users'
-// import AddUser from './screens/AddUser'
+import Users from './screens/Users'
+import AddUser from './screens/AddUser'
 import AddSale from './screens/AddSale'
 import Sales from './screens/Sales'
-// import Statistics from './screens/Statistics'
-// import { OfflineBanner, IsOnlineConsumer } from './Providers/IsOnline'
+import Statistics from './screens/Statistics'
 import { IsOnlineConsumer, OfflineBanner } from './Providers/IsOnline'
 import { isWeb } from './utils'
 
-type IconType = 'MaterialCommunityIcons' | 'Ionicons' | 'FontAwesome'
+type IconType = 'MaterialCommunityIcons' | 'Ionicons' | 'FontAwesome' | 'Entypo'
 
 const androidNavigationOptions =
   Platform.OS === 'android'
@@ -56,8 +55,8 @@ const Home = TabNavigator(
   {
     Sales: StackNavigator({ Sales, AddSale }, stackOptions),
     Database: StackNavigator({ Database, AddProduct }, stackOptions),
-    // Statistics: StackNavigator({ Statistics }, stackOptions),
-    Settings: StackNavigator({ Settings /* , Users, AddUser */ }, stackOptions),
+    Statistics: StackNavigator({ Statistics }, stackOptions),
+    Settings: StackNavigator({ Settings, Users, AddUser }, stackOptions),
   },
   {
     initialRouteName: 'Sales',
@@ -91,7 +90,7 @@ const Home = TabNavigator(
         case 'Database':
           label = 'Base de datos'
           iconName = 'database'
-          iconType = 'MaterialCommunityIcons'
+          iconType = 'Entypo'
           break
         case 'Statistics':
           label = 'Estadisticas'

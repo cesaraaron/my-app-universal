@@ -53,10 +53,6 @@ class Settings extends Component<SettingsProps, SettingsState> {
   }
 
   _renderNotification = () => {
-    if (!this.props.currentUser) {
-      return
-    }
-
     const {
       currentUser: { notifications },
     } = this.props
@@ -85,6 +81,11 @@ class Settings extends Component<SettingsProps, SettingsState> {
             </Text>
           </Right>
         </ListItem>
+        <ListItem itemDivider>
+          <Text note style={{ fontStyle: 'italic' }}>
+            Si no quieres recibir notificaciones deja el valor en cero.
+          </Text>
+        </ListItem>
       </React.Fragment>
     )
   }
@@ -92,7 +93,7 @@ class Settings extends Component<SettingsProps, SettingsState> {
   _renderCurrentUser = () => {
     const { navigation, currentUser } = this.props
 
-    if (currentUser && !currentUser.isAdmin) {
+    if (!currentUser.isAdmin) {
       return null
     }
 
@@ -192,15 +193,13 @@ class Settings extends Component<SettingsProps, SettingsState> {
     }
     const token = await Notifications.getExpoPushTokenAsync()
 
-    if (!token) {
-      return
+    if (token) {
+      removeDeviceToken({
+        variables: {
+          token,
+        },
+      })
     }
-
-    await removeDeviceToken({
-      variables: {
-        token,
-      },
-    })
 
     signOut()
   }

@@ -404,13 +404,13 @@
           "interfaces": null,
           "enumValues": [
             {
-              "name": "ADD_PRODUCTS",
+              "name": "CREATE_PRODUCTS",
               "description": "",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "EDIT_PRODUCTS",
+              "name": "UPDATE_PRODUCTS",
               "description": "",
               "isDeprecated": false,
               "deprecationReason": null
@@ -422,7 +422,7 @@
               "deprecationReason": null
             },
             {
-              "name": "ADD_SALES",
+              "name": "CREATE_SALES",
               "description": "",
               "isDeprecated": false,
               "deprecationReason": null
@@ -724,6 +724,33 @@
                 "ofType": {
                   "kind": "OBJECT",
                   "name": "User",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "client",
+              "description": "",
+              "args": [
+                {
+                  "name": "where",
+                  "description": "",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ClientWhereInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Client",
                   "ofType": null
                 }
               },
@@ -3159,6 +3186,36 @@
                 "ofType": null
               },
               "defaultValue": null
+            },
+            {
+              "name": "_MagicalBackRelation_ClientToService_every",
+              "description": "",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "ServiceWhereInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "_MagicalBackRelation_ClientToService_some",
+              "description": "",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "ServiceWhereInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "_MagicalBackRelation_ClientToService_none",
+              "description": "",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "ServiceWhereInput",
+                "ofType": null
+              },
+              "defaultValue": null
             }
           ],
           "interfaces": null,
@@ -3939,27 +3996,7 @@
               "defaultValue": null
             },
             {
-              "name": "_MagicalBackRelation_ClientToProduct_every",
-              "description": "",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "ClientWhereInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "_MagicalBackRelation_ClientToProduct_some",
-              "description": "",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "ClientWhereInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "_MagicalBackRelation_ClientToProduct_none",
+              "name": "client",
               "description": "",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -4426,27 +4463,7 @@
               "defaultValue": null
             },
             {
-              "name": "_MagicalBackRelation_ClientToSale_every",
-              "description": "",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "ClientWhereInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "_MagicalBackRelation_ClientToSale_some",
-              "description": "",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "ClientWhereInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "_MagicalBackRelation_ClientToSale_none",
+              "name": "client",
               "description": "",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -5603,27 +5620,7 @@
               "defaultValue": null
             },
             {
-              "name": "_MagicalBackRelation_ClientToLog_every",
-              "description": "",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "ClientWhereInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "_MagicalBackRelation_ClientToLog_some",
-              "description": "",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "ClientWhereInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "_MagicalBackRelation_ClientToLog_none",
+              "name": "client",
               "description": "",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -6326,6 +6323,16 @@
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "UserWhereInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "client",
+              "description": "",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "ClientWhereInput",
                 "ofType": null
               },
               "defaultValue": null
@@ -7369,6 +7376,33 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "client",
+              "description": "",
+              "args": [
+                {
+                  "name": "where",
+                  "description": "",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ClientWhereInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Client",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -7801,9 +7835,13 @@
               "description": "",
               "args": [],
               "type": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -8958,6 +8996,33 @@
                 "ofType": {
                   "kind": "OBJECT",
                   "name": "User",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "client",
+              "description": "",
+              "args": [
+                {
+                  "name": "where",
+                  "description": "",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ClientWhereInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Client",
                   "ofType": null
                 }
               },

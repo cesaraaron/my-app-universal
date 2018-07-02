@@ -7,19 +7,19 @@ import { compose } from 'react-apollo'
 import { FetchError } from '../components/FetchError'
 import { moment, getSaleStatistics } from '../utils'
 import sortBy from 'lodash/sortBy'
-// import { SALE_SUBSCRIPTION } from '../queries'
-// import {
-//   getSalesQuery,
-//   MutationType,
-//   SaleSubscription,
-// } from '../__generated__/types'
 import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
+import { SALE_SUBSCRIPTION } from '../queries'
+import {
+  getSalesQuery,
+  SaleSubscription,
+  MutationType,
+} from '../__generated__/types'
 
 type SalesProps = NavigationScreenProps & SalesQueryProp & WithIsOnlineProps
 
 class Sales extends Component<SalesProps> {
   componentDidMount() {
-    // this._subscribeTorMore()
+    this._subscribeTorMore()
   }
 
   render() {
@@ -81,42 +81,49 @@ class Sales extends Component<SalesProps> {
     )
   }
 
-  // _subscribeTorMore = () => {
-  //   const {
-  //     feedSales: { subscribeToMore },
-  //   } = this.props
+  _subscribeTorMore = () => {
+    const {
+      feedSales: { subscribeToMore },
+    } = this.props
 
-  //   subscribeToMore({
-  //     document: SALE_SUBSCRIPTION,
-  //     updateQuery: (
-  //       prev: getSalesQuery,
-  //       { subscriptionData: {data} }
-  //     ): getSalesQuery => {
-  //       if (!data || !data.sale || !data.sale.node) {
-  //         return prev
-  //       }
+    subscribeToMore({
+      document: SALE_SUBSCRIPTION,
+      updateQuery: (
+        prev: getSalesQuery,
+        {
+          subscriptionData: { data },
+        }: { subscriptionData: { data: SaleSubscription } }
+      ): getSalesQuery => {
+        if (!data.sale) {
+          return prev
+        }
 
-  //       const {
-  //         sale: { node, mutation },
-  //       } = data as SaleSubscription
+        const { node, mutation } = data.sale
 
-  //       switch (mutation) {
-  //         case MutationType.CREATED:
-  //           return {
-  //             ...prev,
-  //             sales: [node, ...prev.sales],
-  //           }
-  //         case MutationType.DELETED:
-  //           return {
-  //             ...prev,
-  //             sales: prev.sales.filter(sale => sale.id !== node.id),
-  //           }
-  //         default:
-  //           return prev
-  //       }
-  //     },
-  // })
-  // }
+        // If there is no node sent it is probably a deleted mutation
+        // primsa does not send currently a node when deleting an entry.
+        if (!node) {
+          return prev
+        }
+
+        switch (mutation) {
+          case MutationType.CREATED:
+            return {
+              ...prev,
+              sales: [node, ...prev.sales],
+            }
+          // this does not work, prisma does not send a node when deleting a mutation
+          case MutationType.DELETED:
+            return {
+              ...prev,
+              sales: prev.sales.filter(sale => sale.id !== node.id),
+            }
+          default:
+            return prev
+        }
+      },
+    })
+  }
 }
 
 const EnhancedSales = compose(
@@ -131,8 +138,8 @@ EnhancedSales.navigationOptions = ({ navigation }: NavigationScreenProps) => {
     headerRight: (
       <Button transparent onPress={() => navigation.navigate('AddSale')}>
         <Icon
-          name="add"
-          type="MaterialIcons"
+          name="plus"
+          type="Entypo"
           style={Platform.OS === 'android' ? { color: 'white' } : null}
         />
       </Button>

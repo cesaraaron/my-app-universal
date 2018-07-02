@@ -10,7 +10,7 @@ import {
   View,
   Button,
 } from 'native-base'
-import { TextInput } from 'react-native'
+import { TextInput, Keyboard } from 'react-native'
 import { NavigationScreenProps, withNavigation } from 'react-navigation'
 import {
   ProductsQueryProps,
@@ -22,7 +22,7 @@ import {
   withDeleteSale,
   createWithProducts,
 } from '../HOCs'
-import { searchProductWithQuery, ID } from '../utils'
+import { searchProductWithQuery, ID, isWeb } from '../utils'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
 import { compose } from 'react-apollo'
@@ -35,7 +35,6 @@ import {
 import { GET_SALES, GET_PRODUCTS } from '../queries'
 import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
 import { OptimisticProp } from '../types'
-import { withToast, WithToastProps } from '../Providers/Toast'
 import {
   withPendingMutations,
   PendingMutationsInjectProps,
@@ -60,7 +59,6 @@ type AddSaleProps = NavigationScreenProps<{ sale: SaleType & OptimisticProp }> &
   CreateSaleMutationProp &
   DeleteSaleMutationProp &
   WithIsOnlineProps &
-  WithToastProps &
   PendingMutationsInjectProps
 
 type CartProductWithTypeName = SaleType['products'][0]
@@ -81,6 +79,8 @@ type AddSaleState = {
 }
 
 class AddSale extends Component<AddSaleProps, AddSaleState> {
+  searchInput?: TextInput
+
   static getDerivedStateFromProps({
     feedProducts,
   }: AddSaleProps): Partial<AddSaleState> | null {
@@ -133,7 +133,12 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
       <Container>
         {saleId ? null : (
           <TextInput
-            autoFocus
+            ref={node => {
+              if (!node) {
+                return
+              }
+              this.searchInput = node
+            }}
             value={query}
             style={{ fontSize: 17, padding: 10, paddingVertical: 20 }}
             autoCapitalize="none"
@@ -179,6 +184,9 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
             <ListItem
               key={product.id}
               onPress={() => {
+                if (!isWeb) {
+                  Keyboard.dismiss()
+                }
                 prompt(
                   'Cantidad a vender',
                   '',
@@ -223,30 +231,35 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
             <ListItem
               key={cartProduct.productId}
               onPress={() => {
-                if (!saleId) {
-                  prompt(
-                    'Modificar cantidad',
-                    '',
-                    [
-                      {
-                        text: 'Eliminar del carrito',
-                        onPress: () =>
-                          this._deleteProductFromCart(cartProduct.productId),
-                      },
-                      {
-                        text: 'Actualizar',
-                        onPress: (quantity: string) =>
-                          this._addProductToCart({
-                            productId: cartProduct.productId,
-                            quantity: parseInt(quantity),
-                            initialQuantity: cartProduct.quantitySold,
-                          }),
-                      },
-                    ],
-                    null,
-                    cartProduct.quantitySold
-                  )
+                if (saleId) {
+                  return
                 }
+                if (!isWeb) {
+                  Keyboard.dismiss()
+                }
+
+                prompt(
+                  'Modificar cantidad',
+                  '',
+                  [
+                    {
+                      text: 'Eliminar',
+                      onPress: () =>
+                        this._deleteProductFromCart(cartProduct.productId),
+                    },
+                    {
+                      text: 'Actualizar',
+                      onPress: (quantity: string) =>
+                        this._addProductToCart({
+                          productId: cartProduct.productId,
+                          quantity: parseInt(quantity),
+                          initialQuantity: cartProduct.quantitySold,
+                        }),
+                    },
+                  ],
+                  null,
+                  String(cartProduct.quantitySold)
+                )
               }}
             >
               <Body>
@@ -326,7 +339,6 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     quantity,
     initialQuantity = 0,
   }: addProductToCart) => {
-    const { Toast } = this.props
     const { cartProducts, products } = this.state
 
     const quantityToAdd = quantity || 1
@@ -335,17 +347,17 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
     let quantityAvailable = productToAdd.quantity + initialQuantity
 
-    const productToAddName = productToAdd.name
-
     if (quantityToAdd > quantityAvailable) {
-      Toast.show({
-        text:
+      setTimeout(() => {
+        alert(
+          '',
           quantityAvailable === 0
-            ? `El producto "${productToAddName}" tiene 0 unidades disponibles`
-            : `El producto "${productToAddName}" solo tiene "${quantityAvailable}" unidades disponibles en el inventario. Usted esta intentado agregar "${quantityToAdd}".`,
-        duration: 8000,
-        buttonText: 'Ok',
-      })
+            ? `El producto "${productToAdd.name}" tiene 0 unidades disponibles`
+            : `El producto "${
+                productToAdd.name
+              }" solo tiene "${quantityAvailable}" unidades disponibles en el inventario. Usted esta intentado agregar "${quantityToAdd}".`
+        )
+      }, 1000)
       return
     }
 
@@ -393,16 +405,11 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
       createSale,
       currentUser,
       navigation,
-      Toast,
       isOnline,
       addId,
       removeId,
     } = this.props
     const { cartProducts, products } = this.state
-
-    if (!currentUser) {
-      return
-    }
 
     if (!cartProducts.length) {
       alert(
@@ -414,7 +421,7 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
     if (
       !currentUser.isAdmin &&
-      !currentUser.permissions.includes(UserPermissions.ADD_SALES)
+      !currentUser.permissions.includes(UserPermissions.CREATE_SALES)
     ) {
       alert(
         'Acceso denegado',
@@ -453,24 +460,14 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
         if (!isOnline && createSale.__optimistic) {
           addId(optimisticId, true)
-          Toast.show({
-            text:
-              'Esta venta se guardara hasta que la conneción a internet se restablesca',
-            type: 'warning',
-            duration: 8000,
-            buttonText: 'Ok',
-          })
+          alert(
+            '',
+            'Esta venta se guardara hasta que la conneción a internet se restablesca'
+          )
         }
 
         if (!createSale.__optimistic) {
           removeId(optimisticId)
-
-          Toast.show({
-            text: `La venta con id ${createSale.id} fue creada exitosamente`,
-            type: 'success',
-            duration: 8000,
-            buttonText: 'Ok',
-          })
         }
 
         const data = proxy.readQuery({ query: GET_SALES }) as getSalesQuery
@@ -491,7 +488,7 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     const { deleteSale, currentUser, navigation, entries } = this.props
     const { sale } = this.state
 
-    if (!currentUser || !sale) {
+    if (!sale) {
       return
     }
 
@@ -559,7 +556,6 @@ const EnhancedAddSale = compose(
   withCreateSale,
   withDeleteSale,
   withIsOnline,
-  withToast,
   withPendingMutations
 )(AddSale)
 
