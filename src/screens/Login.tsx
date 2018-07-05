@@ -8,8 +8,6 @@ import {
   Input,
   Button,
   Text,
-  Title,
-  Body,
 } from 'native-base'
 import { Keyboard } from 'react-native'
 import { compose } from 'react-apollo'
@@ -41,11 +39,7 @@ class Login extends Component<LoginProps, LoginState> {
 
     return (
       <Container>
-        <Header>
-          <Body>
-            <Title>Entrar</Title>
-          </Body>
-        </Header>
+        <Header />
         <OfflineBanner isOnline={isOnline} />
         <Content padder>
           <Form>
