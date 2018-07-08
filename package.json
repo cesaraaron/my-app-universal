@@ -24,6 +24,8 @@
     "cross-env": "^5.2.0",
     "css-loader": "^0.28.7",
     "electron": "^2.0.3",
+    "electron-builder": "^20.19.2",
+    "eslint": "^5.0.1",
     "file-loader": "^1.1.7",
     "husky": "^0.14.3",
     "jest-expo": "~27.0.0",
@@ -47,10 +49,11 @@
     "android": "react-native-scripts-ts android",
     "ios": "react-native-scripts-ts ios",
     "test": "jest",
+    "dev": "concurrently 'npm run web' 'wait-on http://localhost:8080/ && npm run electron'",
     "web": "node scripts/updateEndpoints && webpack-dev-server -d --config ./webpack.config.js  --inline --hot --colors --content-base public/ --history-api-fallback",
     "electron": "cross-env NODE_ENV=development electron public/electron",
-    "dev": "concurrently 'npm run web' 'wait-on http://localhost:8080/ && npm run electron'",
-    "build": "NODE_ENV=production webpack -p --config ./webpack.config.js",
+    "build": "cross-env NODE_ENV=production webpack -p --config ./webpack.config.js",
+    "electron-pack": "electron-builder",
     "generate": "apollo-codegen introspect-schema http://localhost:4000 --output src/schema.json && apollo-codegen generate ./src/queries.ts --add-typename --schema ./src/schema.json --target typescript --output ./src/__generated__/types.ts",
     "precommit": "lint-staged"
   },
@@ -115,6 +118,15 @@
     "*.{ts,tsx,js,json,css}": [
       "prettier --write",
       "git add"
+    ]
+  },
+  "build": {
+    "appId": "com.cesaraaron.my-app",
+    "extraMetadata": {
+      "main": "public/electron.js"
+    },
+    "files": [
+      "public/**/*"
     ]
   }
 }
