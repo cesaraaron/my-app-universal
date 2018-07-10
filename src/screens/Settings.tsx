@@ -66,7 +66,10 @@ class Settings extends Component<SettingsProps, SettingsState> {
             prompt(
               'Notificaciones',
               '',
-              [{ text: 'aceptar', onPress: this._onPromptSubmit }],
+              [
+                { text: 'Cancelar' },
+                { text: 'Aceptar', onPress: this._onPromptSubmit },
+              ],
               null,
               notifications.fireWhen
             )
