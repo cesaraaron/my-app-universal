@@ -1,8 +1,9 @@
-const electron = require('electron')
+// @ts-check
+const { app, globalShortcut, BrowserWindow } = require('electron')
+const { autoUpdater } = require('electron-updater')
+const log = require('electron-log')
+
 // Module to control application life.
-const app = electron.app
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow
 
 const path = require('path')
 const url = require('url')
@@ -11,6 +12,10 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+autoUpdater.logger = log
+
+log.info('App starting...')
+
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600 })
@@ -18,7 +23,7 @@ function createWindow() {
   // and load the index.html of the app.
   const startUrl =
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8080'
+      ? 'http://127.0.0.1:8080'
       : url.format({
           pathname: path.join(__dirname, '../public/index.html'),
           protocol: 'file:',
@@ -36,6 +41,10 @@ function createWindow() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
+  })
+
+  globalShortcut.register('cmd+i', () => {
+    mainWindow.webContents.openDevTools()
   })
 }
 
@@ -63,3 +72,15 @@ app.on('activate', function() {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+autoUpdater.on('update-downloaded', (ev, info) => {
+  if (process.platform === 'darwin') {
+    autoUpdater.quitAndInstall()
+  } else {
+    autoUpdater.checkForUpdatesAndNotify()
+  }
+})
+
+app.on('ready', () => {
+  autoUpdater.checkForUpdates()
+})

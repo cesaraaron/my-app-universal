@@ -116,6 +116,8 @@ module.exports = {
   ],
   devtool: 'eval',
 
+  cache: true,
+
   // configures where the build ends up
   output: {
     filename: 'bundle.js',
