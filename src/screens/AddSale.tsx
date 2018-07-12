@@ -45,8 +45,6 @@ import { alert } from '../components/alert'
 
 const { prompt } = Modal
 
-type Partial<T> = { [P in keyof T]?: T[P] }
-
 type addProductToCart = {
   productId: string
   quantity: number
@@ -79,20 +77,6 @@ type AddSaleState = {
 }
 
 class AddSale extends Component<AddSaleProps, AddSaleState> {
-  searchInput?: TextInput
-
-  static getDerivedStateFromProps({
-    feedProducts,
-  }: AddSaleProps): Partial<AddSaleState> | null {
-    if (feedProducts.loading || feedProducts.error) {
-      return null
-    }
-    ''
-    return {
-      products: feedProducts.products,
-    }
-  }
-
   constructor(props: AddSaleProps) {
     super(props)
     const sale = props.navigation.getParam('sale')
@@ -137,7 +121,6 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
               if (!node) {
                 return
               }
-              this.searchInput = node
             }}
             value={query}
             style={{ fontSize: 17, padding: 10, paddingVertical: 20 }}

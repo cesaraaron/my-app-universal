@@ -27,25 +27,46 @@ const UserContext = React.createContext<UserContextValue>({
 })
 
 type CurrentUserProps = {
+  signOut(): Promise<void>
   children: JSX.Element | (JSX.Element | null)[]
 }
 
-export const CurrentUserProvider = ({ children }: CurrentUserProps) => (
+export const CurrentUserProvider = ({
+  children,
+  signOut,
+}: CurrentUserProps) => (
   <MeQuery query={ME_QUERY} errorPolicy="all">
-    {({ loading, data, error, refetch }) => {
-      if (loading || !data || !data.me) {
-        return <Loading />
-      }
-      if (error) {
-        return <FetchError error={error} refetch={refetch} />
-      }
+    {({ loading, data, error, refetch }) =>
+      class extends React.Component {
+        componentDidMount() {
+          if (!data || !data.me) {
+            signOut()
+          }
+        }
 
-      return (
-        <UserContext.Provider value={{ currentUser: data.me }}>
-          {children}
-        </UserContext.Provider>
-      )
-    }}
+        componentDidUpdate() {
+          if (!data || !data.me) {
+            signOut()
+          }
+        }
+
+        render() {
+          if (loading || !data || !data.me) {
+            return <Loading />
+          }
+
+          if (error) {
+            return <FetchError error={error} refetch={refetch} />
+          }
+
+          return (
+            <UserContext.Provider value={{ currentUser: data.me }}>
+              {children}
+            </UserContext.Provider>
+          )
+        }
+      }
+    }
   </MeQuery>
 )
 

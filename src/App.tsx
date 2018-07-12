@@ -20,6 +20,7 @@ import RegisterPushNotification from './components/RegisterPushNotification'
 import { alert } from './components/alert'
 import { HTTP_ENDPOINT, WS_ENDPOINT } from 'react-native-dotenv'
 import { isWeb } from './utils'
+import { FontLoading } from './components/FontLoading'
 
 if (!HTTP_ENDPOINT || !WS_ENDPOINT) {
   throw new Error('Invalidad endpoints')
@@ -117,22 +118,24 @@ const client = new ApolloClient({
 })
 
 export default () => (
-  <ApolloProvider client={client}>
-    <IsOnlineProvider>
-      <PendingMutationsProvider>
-        <Auth>
-          {isSignedIn =>
-            isSignedIn ? (
-              <CurrentUserProvider>
-                {isWeb ? null : <RegisterPushNotification />}
+  <FontLoading>
+    <ApolloProvider client={client}>
+      <IsOnlineProvider>
+        <PendingMutationsProvider>
+          <Auth>
+            {({ isSignedIn, signOut }) =>
+              isSignedIn ? (
+                <CurrentUserProvider signOut={signOut}>
+                  {isWeb ? null : <RegisterPushNotification />}
+                  <RootNavigator isSignedIn={isSignedIn} />
+                </CurrentUserProvider>
+              ) : (
                 <RootNavigator isSignedIn={isSignedIn} />
-              </CurrentUserProvider>
-            ) : (
-              <RootNavigator isSignedIn={isSignedIn} />
-            )
-          }
-        </Auth>
-      </PendingMutationsProvider>
-    </IsOnlineProvider>
-  </ApolloProvider>
+              )
+            }
+          </Auth>
+        </PendingMutationsProvider>
+      </IsOnlineProvider>
+    </ApolloProvider>
+  </FontLoading>
 )
