@@ -22,8 +22,10 @@ export type AuthState = {
   loading: boolean
 }
 
+type AuthChildrenPropArgs = AuthContextValue
+
 type AuthProps = {
-  children(isSignedIn: boolean): JSX.Element
+  children(args: AuthChildrenPropArgs): JSX.Element
 }
 
 export class Auth extends Component<AuthProps, AuthState> {
@@ -61,7 +63,11 @@ export class Auth extends Component<AuthProps, AuthState> {
       <AuthContext.Provider
         value={{ signIn: this.signIn, signOut: this.signOut, isSignedIn }}
       >
-        {this.props.children(isSignedIn)}
+        {this.props.children({
+          isSignedIn,
+          signIn: this.signIn,
+          signOut: this.signOut,
+        })}
       </AuthContext.Provider>
     )
   }

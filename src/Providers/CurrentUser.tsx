@@ -36,15 +36,21 @@ export const CurrentUserProvider = ({
   signOut,
 }: CurrentUserProps) => (
   <MeQuery query={ME_QUERY} errorPolicy="all">
-    {({ loading, data, error, refetch }) =>
-      class extends React.Component {
+    {({ loading, data, error, refetch }) => {
+      class CurrentUser extends React.Component {
         componentDidMount() {
+          if (loading) {
+            return
+          }
           if (!data || !data.me) {
             signOut()
           }
         }
 
         componentDidUpdate() {
+          if (loading) {
+            return
+          }
           if (!data || !data.me) {
             signOut()
           }
@@ -66,7 +72,8 @@ export const CurrentUserProvider = ({
           )
         }
       }
-    }
+      return <CurrentUser />
+    }}
   </MeQuery>
 )
 
