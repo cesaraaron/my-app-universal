@@ -201,10 +201,12 @@ class Settings extends Component<SettingsProps, SettingsState> {
         variables: {
           token,
         },
+      }).then(() => {
+        signOut()
       })
+    } else {
+      signOut()
     }
-
-    signOut()
   }
 }
 

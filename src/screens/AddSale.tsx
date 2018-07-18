@@ -45,6 +45,8 @@ import { alert } from '../components/alert'
 
 const { prompt } = Modal
 
+type Partial<T> = { [P in keyof T]?: T[P] }
+
 type addProductToCart = {
   productId: string
   quantity: number
@@ -77,6 +79,23 @@ type AddSaleState = {
 }
 
 class AddSale extends Component<AddSaleProps, AddSaleState> {
+  static getDerivedStateFromProps(
+    { feedProducts: { error, loading, products } }: AddSaleProps,
+    { products: prevProducts }: AddSaleState
+  ): Partial<AddSaleState> | null {
+    if (prevProducts.length > 0 || error || loading) {
+      return null
+    }
+
+    if (products) {
+      return {
+        products,
+      }
+    }
+
+    return null
+  }
+
   constructor(props: AddSaleProps) {
     super(props)
     const sale = props.navigation.getParam('sale')
@@ -158,7 +177,7 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
       <React.Fragment>
         {searchResults.length ? (
           <ListItem itemDivider>
-            <Text>Resultados de la busqueda:</Text>
+            <Text style={{ marginTop: 20 }}>Resultados de la busqueda:</Text>
           </ListItem>
         ) : null}
 
@@ -205,7 +224,7 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
       <React.Fragment>
         {cartProducts.length ? (
           <ListItem itemDivider>
-            <Text>Carrito</Text>
+            <Text style={{ marginTop: 20 }}>Carrito</Text>
           </ListItem>
         ) : null}
 
@@ -271,7 +290,7 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     return (
       <React.Fragment>
         <ListItem itemDivider>
-          <Text>Total</Text>
+          <Text style={{ marginTop: 20 }}>Total</Text>
         </ListItem>
         <ListItem>
           <Body>
