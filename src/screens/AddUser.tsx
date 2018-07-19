@@ -382,11 +382,6 @@ class AddUser extends Component<AddUserProps, AddUserState> {
 
         if (!createUser.__optimistic) {
           removeId(optimisticId)
-
-          alert(
-            '',
-            `El usuario con nombre "${createUser.name}" fue creado exitosamente`
-          )
         }
         const data = proxy.readQuery({
           query: GET_USERS,
@@ -449,13 +444,6 @@ class AddUser extends Component<AddUserProps, AddUserState> {
 
         if (!updateUser.__optimistic) {
           removeId(userId)
-
-          alert(
-            '',
-            `El usuario con nombre "${
-              updateUser.name
-            }" fue actualizado exitosamente.`
-          )
         }
 
         const data = proxy.readQuery({
