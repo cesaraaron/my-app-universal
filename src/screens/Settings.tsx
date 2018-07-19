@@ -27,17 +27,9 @@ type SettingsProps = WithCurrentUserProps &
   WithIsOnlineProps &
   RemoveDeviceTokenMutationProps
 
-type SettingsState = {
-  promptVisible: boolean
-}
-
 const defaultFireWhen = 0
 
-class Settings extends Component<SettingsProps, SettingsState> {
-  state = {
-    promptVisible: false,
-  }
-
+class Settings extends Component<SettingsProps> {
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -71,7 +63,7 @@ class Settings extends Component<SettingsProps, SettingsState> {
                 { text: 'Aceptar', onPress: this._onPromptSubmit },
               ],
               null,
-              notifications.fireWhen
+              String(notifications.fireWhen)
             )
           }
         >
@@ -139,9 +131,6 @@ class Settings extends Component<SettingsProps, SettingsState> {
 
   _onPromptSubmit = (quantity: string) => {
     const { updateUser, currentUser } = this.props
-    if (!currentUser) {
-      return
-    }
 
     const fireWhen = Number(quantity) || 0
 

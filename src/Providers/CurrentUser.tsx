@@ -12,6 +12,15 @@ type UserContextValue = {
   currentUser: UserType
 }
 
+class SignOut extends React.Component<{ signOut: () => {} }> {
+  componentDidMount() {
+    this.props.signOut()
+  }
+  render() {
+    return null
+  }
+}
+
 const UserContext = React.createContext<UserContextValue>({
   currentUser: {
     __typename: 'User',
@@ -37,42 +46,25 @@ export const CurrentUserProvider = ({
 }: CurrentUserProps) => (
   <MeQuery query={ME_QUERY} errorPolicy="all">
     {({ loading, data, error, refetch }) => {
-      class CurrentUser extends React.Component {
-        componentDidMount() {
-          if (loading) {
-            return
-          }
-          if (!data || !data.me) {
-            signOut()
-          }
-        }
-
-        componentDidUpdate() {
-          if (loading) {
-            return
-          }
-          if (!data || !data.me) {
-            signOut()
-          }
-        }
-
-        render() {
-          if (loading || !data || !data.me) {
-            return <Loading />
-          }
-
-          if (error) {
-            return <FetchError error={error} refetch={refetch} />
-          }
-
-          return (
-            <UserContext.Provider value={{ currentUser: data.me }}>
-              {children}
-            </UserContext.Provider>
-          )
-        }
+      if (loading) {
+        return <Loading />
       }
-      return <CurrentUser />
+
+      // The token of the logged user is saved in AsyncStorage but if it is
+      // an invalid token then the server won't return the user, so logout
+      if (!data || !data.me) {
+        return <SignOut signOut={signOut} />
+      }
+
+      if (error) {
+        return <FetchError error={error} refetch={refetch} />
+      }
+
+      return (
+        <UserContext.Provider value={{ currentUser: data.me }}>
+          {children}
+        </UserContext.Provider>
+      )
     }}
   </MeQuery>
 )
