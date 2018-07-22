@@ -20,6 +20,7 @@ export const FetchError = ({
   >
     <Text>{message}</Text>
     <Button
+      light
       style={{ alignSelf: 'center', marginTop: 10 }}
       onPress={() => refetch()}
     >

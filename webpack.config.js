@@ -5,6 +5,8 @@ const webpack = require('webpack')
 
 const appDirectory = path.resolve(__dirname, './')
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 // Many OSS React Native packages are not compiled to ES5 before being
 // published. If you depend on uncompiled packages they may cause webpack build
 // errors. To fix this webpack can be configured to compile to the necessary
@@ -121,7 +123,7 @@ module.exports = {
   // configures where the build ends up
   output: {
     filename: 'bundle.js',
-    publicPath: '/assets/',
+    publicPath: isProduction ? './assets/' : '/assets/',
     path: path.resolve(appDirectory, './public/assets'),
   },
 
