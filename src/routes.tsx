@@ -24,7 +24,7 @@ import { isWeb } from './utils'
 type IconType = 'MaterialCommunityIcons' | 'Ionicons' | 'FontAwesome' | 'Entypo'
 
 const androidNavigationOptions =
-  Platform.OS === 'android'
+  Platform.OS === 'android' || Platform.OS === 'web'
     ? {
         headerTintColor: '#fff',
         headerStyle: {
@@ -63,7 +63,7 @@ const Home = TabNavigator(
     swipeEnabled: isWeb ? false : true,
     tabBarPosition: 'bottom',
     tabBarOptions:
-      Platform.OS === 'android'
+      Platform.OS === 'android' || Platform.OS === 'web'
         ? {
             activeTintColor: '#fff',
             inactiveTintColor: '#fff8',

@@ -185,7 +185,11 @@ EnhancedDatabase.navigationOptions = ({
         <Icon
           name="plus"
           type="Entypo"
-          style={Platform.OS === 'android' ? { color: 'white' } : null}
+          style={
+            Platform.OS === 'android' || Platform.OS === 'web'
+              ? { color: 'white' }
+              : null
+          }
         />
       </Button>
     ),

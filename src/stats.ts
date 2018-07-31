@@ -41,53 +41,94 @@ const groupSalesPerDate = (sales: SaleType[]): PerDate => {
   return salesPerDate
 }
 
-const getSalesPerDay = (sales: SaleType[]) => {
+// const getSalesPerDay = (sales: SaleType[]) => {
+//   const perDate = groupSalesPerDate(sales)
+
+//   type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6
+
+//   const salesPerDay: { [k in WeekDay]: [string, number] } = {
+//     0: ['Domingo', 0],
+//     1: ['Lunes', 0],
+//     2: ['Martes', 0],
+//     3: ['Miercoles', 0],
+//     4: ['Jueves', 0],
+//     5: ['Viernes', 0],
+//     6: ['Sabado', 0],
+//   }
+
+//   Object.entries(perDate).forEach(([dateString, sales]) => {
+//     const day = moment(dateString).day() as WeekDay
+//     salesPerDay[day][0] = moment(dateString).format('ddd D [de] MMM')
+//     salesPerDay[day][1] = sales.length
+//   })
+
+//   return salesPerDay
+// }
+
+type SaleDate = string
+
+type SalesPayload = {
+  money: number
+  unitsSold: number
+}
+type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6
+
+type SalesPerDay = { [k in WeekDay]: [SaleDate, SalesPayload] }
+
+const getPerDaySalesStats = (sales: SaleType[]): SalesPerDay => {
   const perDate = groupSalesPerDate(sales)
 
-  type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6
-
-  const salesPerDay: { [k in WeekDay]: [string, number] } = {
-    0: ['Domingo', 0],
-    1: ['Lunes', 0],
-    2: ['Martes', 0],
-    3: ['Miercoles', 0],
-    4: ['Jueves', 0],
-    5: ['Viernes', 0],
-    6: ['Sabado', 0],
+  const salesPerDay: SalesPerDay = {
+    0: ['Domingo', { money: 0, unitsSold: 0 }],
+    1: ['Lunes', { money: 0, unitsSold: 0 }],
+    2: ['Martes', { money: 0, unitsSold: 0 }],
+    3: ['Miercoles', { money: 0, unitsSold: 0 }],
+    4: ['Jueves', { money: 0, unitsSold: 0 }],
+    5: ['Viernes', { money: 0, unitsSold: 0 }],
+    6: ['Sabado', { money: 0, unitsSold: 0 }],
   }
 
   Object.entries(perDate).forEach(([dateString, sales]) => {
     const day = moment(dateString).day() as WeekDay
+    const allMoney = sales.reduce((p, c) => {
+      return p + c.products.reduce((p, c) => p + c.price * c.quantitySold, 0)
+    }, 0)
     salesPerDay[day][0] = moment(dateString).format('ddd D [de] MMM')
-    salesPerDay[day][1] = sales.length
+    salesPerDay[day][1].money = allMoney
+    salesPerDay[day][1].unitsSold = sales.length
   })
 
   return salesPerDay
 }
+type MonthNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+type SalesPerMonth = { [k in MonthNumber]: [SaleDate, SalesPayload] }
 
 const getSalesPerMonth = (sales: SaleType[]) => {
   const perDate = groupSalesPerDate(sales)
 
-  type MonthNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
-
-  const salesPerMonth: { [k in MonthNumber]: [string, number] } = {
-    0: ['Enero', 0],
-    1: ['Febrero', 0],
-    2: ['Marzo', 0],
-    3: ['Abril', 0],
-    4: ['Mayo', 0],
-    5: ['Junio', 0],
-    6: ['Julio', 0],
-    7: ['Agosto', 0],
-    8: ['Septiembre', 0],
-    9: ['Octubre', 0],
-    10: ['Noviembre', 0],
-    11: ['Diciembre', 0],
+  const salesPerMonth: SalesPerMonth = {
+    0: ['Enero', { money: 0, unitsSold: 0 }],
+    1: ['Febrero', { money: 0, unitsSold: 0 }],
+    2: ['Marzo', { money: 0, unitsSold: 0 }],
+    3: ['Abril', { money: 0, unitsSold: 0 }],
+    4: ['Mayo', { money: 0, unitsSold: 0 }],
+    5: ['Junio', { money: 0, unitsSold: 0 }],
+    6: ['Julio', { money: 0, unitsSold: 0 }],
+    7: ['Agosto', { money: 0, unitsSold: 0 }],
+    8: ['Septiembre', { money: 0, unitsSold: 0 }],
+    9: ['Octubre', { money: 0, unitsSold: 0 }],
+    10: ['Noviembre', { money: 0, unitsSold: 0 }],
+    11: ['Diciembre', { money: 0, unitsSold: 0 }],
   }
 
   Object.entries(perDate).forEach(([dateString, sales]) => {
     const month = moment(dateString).month() as MonthNumber
-    salesPerMonth[month][1] = sales.length
+    salesPerMonth[month][1].unitsSold = sales.length
+
+    const allMoney = sales.reduce((p, c) => {
+      return p + c.products.reduce((p, c) => p + c.price * c.quantitySold, 0)
+    }, 0)
+    salesPerMonth[month][1].money = allMoney
   })
 
   return salesPerMonth
@@ -98,6 +139,42 @@ type BarCharts = {
   data: number[]
 }
 
+type ProductStatistic = {
+  productId: string
+  name: string
+  money: number
+  unitsSold: number
+}
+
+const getProductStatistics = (sales: SaleType[]): ProductStatistic[] => {
+  let products: ProductStatistic[] = []
+
+  sales.forEach(sale => {
+    if (!sale.products) {
+      return
+    }
+
+    sale.products.forEach(product => {
+      const currentProduct = products.find(
+        p => p.productId === product.productId
+      )
+
+      if (currentProduct) {
+        currentProduct.money += product.price * product.quantitySold
+        currentProduct.unitsSold += product.quantitySold
+      } else {
+        products.push({
+          productId: product.productId,
+          name: product.name,
+          money: product.price * product.quantitySold,
+          unitsSold: product.quantitySold,
+        })
+      }
+    })
+  })
+  return products
+}
+
 export const getTotalNumberOfSales = (sales: SaleType[]): BarCharts => {
   // Show only sales of the last year
   const filteredSales = sales.filter(({ createdAt }) => {
@@ -106,20 +183,13 @@ export const getTotalNumberOfSales = (sales: SaleType[]): BarCharts => {
 
   const salesDateDiff = getSalesDateDiffInDays(filteredSales)
 
-  if (salesDateDiff === 0) {
-    return {
-      labels: [],
-      data: [],
-    }
-  }
-
   if (salesDateDiff <= 7) {
-    const perDay = getSalesPerDay(filteredSales)
+    const perDay = getPerDaySalesStats(filteredSales)
     const perDayValues = Object.values(perDay)
 
     return {
       labels: perDayValues.map(dayData => dayData[0]),
-      data: perDayValues.map(dayData => dayData[1]),
+      data: perDayValues.map(dayData => dayData[1].unitsSold),
     }
   }
 
@@ -128,6 +198,40 @@ export const getTotalNumberOfSales = (sales: SaleType[]): BarCharts => {
 
   return {
     labels: perMonthValues.map(monthData => monthData[0]),
-    data: perMonthValues.map(monthData => monthData[1]),
+    data: perMonthValues.map(monthData => monthData[1].unitsSold),
+  }
+}
+
+export const getTheTenBestSellingProducts = (sales: SaleType[]) => {
+  const productStatistics = getProductStatistics(sales)
+  let bestSelling = productStatistics.sort((a, b) => b.unitsSold - a.unitsSold)
+
+  return bestSelling.slice(0, 10)
+}
+
+export const getIncomes = (sales: SaleType[]): BarCharts => {
+  // Show only sales of the last year
+  const filteredSales = sales.filter(({ createdAt }) => {
+    return moment(createdAt).diff(moment(), 'years') === 0
+  })
+
+  const salesDateDiff = getSalesDateDiffInDays(filteredSales)
+
+  if (salesDateDiff <= 7) {
+    const perDay = getPerDaySalesStats(filteredSales)
+    const perDayValues = Object.values(perDay)
+
+    return {
+      labels: perDayValues.map(dayData => dayData[0]),
+      data: perDayValues.map(dayData => dayData[1].money),
+    }
+  }
+
+  const perMonth = getSalesPerMonth(filteredSales)
+  const perMonthValues = Object.values(perMonth)
+
+  return {
+    labels: perMonthValues.map(monthData => monthData[0]),
+    data: perMonthValues.map(monthData => monthData[1].money),
   }
 }

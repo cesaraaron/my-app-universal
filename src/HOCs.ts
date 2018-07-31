@@ -154,15 +154,20 @@ export type DeleteProductMutationProp = {
 // Sales
 export type SaleType = getSalesQuery['sales'][0]
 
+export const createWithSales = (
+  opts: OperationOption<{}, withSalesProps>['options']
+) =>
+  graphql<withSalesProps>(GET_SALES, {
+    name: 'feedSales',
+    options: {
+      fetchPolicy: 'cache-and-network',
+      errorPolicy: 'all',
+      ...opts,
+    },
+  })
+
 type withSalesProps = ChildDataProps<{}, getSalesQuery, {}>
-export const withSales = graphql<withSalesProps>(GET_SALES, {
-  name: 'feedSales',
-  options: {
-    fetchPolicy: 'cache-and-network',
-    errorPolicy: 'all',
-    pollInterval: 30000,
-  },
-})
+export const withSales = createWithSales({ pollInterval: 30000 })
 
 export type SalesQueryProp = {
   feedSales: withSalesProps['data']

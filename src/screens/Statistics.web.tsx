@@ -1,14 +1,20 @@
 import React, { Component } from 'react'
 import { Content, List, ListItem, Text } from 'native-base'
-import { SalesQueryProp, withSales } from '../HOCs'
+import { SalesQueryProp, createWithSales } from '../HOCs'
 import { compose } from 'react-apollo'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
 import { NavigationScreenProps, withNavigation } from 'react-navigation'
-import { getBestsellingProduct, getSaleStatistics } from '../utils'
 import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
-import { Bar } from 'react-chartjs-2'
-import { getTotalNumberOfSales } from '../stats'
+import { Bar, Doughnut, defaults } from 'react-chartjs-2'
+import {
+  getTotalNumberOfSales,
+  getTheTenBestSellingProducts,
+  getIncomes,
+} from '../stats'
+
+// @ts-ignore
+defaults.global.legend.position = 'bottom'
 
 type StatisticsProps = NavigationScreenProps &
   SalesQueryProp &
@@ -16,6 +22,12 @@ type StatisticsProps = NavigationScreenProps &
 
 // TODO: See if it updates after a sale is made
 class Statistics extends Component<StatisticsProps> {
+  componentDidMount() {
+    this.props.navigation.addListener('willFocus', () =>
+      this.props.feedSales.refetch()
+    )
+  }
+
   render() {
     const {
       feedSales: { refetch, loading, error, sales },
@@ -32,19 +44,51 @@ class Statistics extends Component<StatisticsProps> {
     if (!sales) {
       return null
     }
-    const barCharts = getTotalNumberOfSales(sales)
 
     return (
       <Content style={{ backgroundColor: '#f4f4f4' }}>
         <List style={{ backgroundColor: 'white' }}>
-          {/* {this._renderStatistics()} */}
+          {this._renderBestSellingProducts()}
+          {this._renderNumberOfSalesStats()}
+        </List>
+      </Content>
+    )
+  }
+
+  _renderNumberOfSalesStats = () => {
+    const {
+      feedSales: { sales },
+    } = this.props
+
+    if (!sales) {
+      return null
+    }
+
+    const numberOfSales = getTotalNumberOfSales(sales)
+    const incomes = getIncomes(sales)
+
+    return (
+      <React.Fragment>
+        <ListItem itemDivider>
+          <Text style={marginTop}>Ventas</Text>
+        </ListItem>
+        <ListItem>
           <Bar
+            options={{
+              title: {
+                display: true,
+                text:
+                  'Ventas totales: ' +
+                  numberOfSales.data.reduce((a, b) => a + b),
+                position: 'left',
+              },
+            }}
             data={{
-              labels: barCharts.labels,
+              labels: numberOfSales.labels,
               datasets: [
                 {
-                  label: '# de ventas',
-                  data: barCharts.data,
+                  label: 'Numero de ventas',
+                  data: numberOfSales.data,
                   backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -54,16 +98,67 @@ class Statistics extends Component<StatisticsProps> {
                     'rgba(255, 159, 64, 0.2)',
                     'rgba(88, 159, 64, 0.2)',
                   ],
+                  borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(88, 159, 64, 1)',
+                  ],
+                  borderWidth: 1,
                 },
               ],
             }}
           />
-        </List>
-      </Content>
+        </ListItem>
+        <ListItem>
+          <Bar
+            options={{
+              title: {
+                display: true,
+                text:
+                  'Dinero total: ' +
+                  incomes.data.reduce((a, b) => a + b).toLocaleString(),
+                position: 'left',
+              },
+            }}
+            data={{
+              labels: incomes.labels,
+              datasets: [
+                {
+                  label: 'Dinero en ventas',
+                  data: incomes.data,
+                  backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(88, 159, 64, 0.2)',
+                  ],
+                  borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(88, 159, 64, 1)',
+                  ],
+                  borderWidth: 1,
+                },
+              ],
+            }}
+          />
+        </ListItem>
+      </React.Fragment>
     )
   }
 
-  _renderStatistics = () => {
+  _renderBestSellingProducts = () => {
     const {
       feedSales: { sales },
     } = this.props
@@ -72,48 +167,40 @@ class Statistics extends Component<StatisticsProps> {
       return null
     }
 
-    const bestSelling = getBestsellingProduct(sales)
-    const { totalMoney, totalUnits } = getSaleStatistics(sales)
+    const bestSelling = getTheTenBestSellingProducts(sales)
 
     return (
       <React.Fragment>
-        {bestSelling.length ? (
-          <ListItem itemDivider>
-            <Text style={marginTop}>Producto mas vendido</Text>
-          </ListItem>
-        ) : null}
-        {bestSelling.map(({ name, unitsSold }, idx) => {
-          return (
-            <ListItem key={idx}>
-              <Text>{name}</Text>
-              <Text note style={listItemNote}>{`${unitsSold} ${
-                unitsSold === 1 ? 'unidad' : 'unidades'
-              } vendidas`}</Text>
-            </ListItem>
-          )
-        })}
         <ListItem itemDivider>
-          <Text style={marginTop}>Unidades vendidas</Text>
+          <Text style={marginTop}>Productos mas vendidos</Text>
         </ListItem>
-        <ListItem>
-          <Text>{totalUnits}</Text>
-          <Text note style={listItemNote}>{`${
-            Number(totalUnits) === 1 ? 'unidad vendida' : 'unidades vendidas'
-          }`}</Text>
-        </ListItem>
-        <ListItem itemDivider>
-          <Text style={marginTop}>Dinero total</Text>
-        </ListItem>
-        <ListItem>
-          <Text>Lps. {totalMoney}</Text>
-        </ListItem>
+        <Doughnut
+          data={{
+            labels: bestSelling.map(p => p.name),
+            datasets: [
+              {
+                label: '# de ventas',
+                data: bestSelling.map(p => p.unitsSold),
+                backgroundColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)',
+                  'rgba(88, 159, 64, 1)',
+                ],
+              },
+            ],
+          }}
+        />
       </React.Fragment>
     )
   }
 }
 
 const EnhancedStatistics = compose(
-  withSales,
+  createWithSales({}),
   withNavigation,
   withIsOnline
 )(Statistics)
@@ -125,10 +212,6 @@ EnhancedStatistics.navigationOptions = {
 export default EnhancedStatistics
 
 // const formatter = Intl.NumberFormat('es-HN', { minimumFractionDigits: 2 })
-
-const listItemNote = {
-  paddingLeft: 5,
-}
 
 const marginTop = {
   marginTop: 10,
