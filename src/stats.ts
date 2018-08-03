@@ -79,13 +79,13 @@ const getPerDaySalesStats = (sales: SaleType[]): SalesPerDay => {
   const perDate = groupSalesPerDate(sales)
 
   const salesPerDay: SalesPerDay = {
-    0: ['Domingo', { money: 0, unitsSold: 0 }],
-    1: ['Lunes', { money: 0, unitsSold: 0 }],
-    2: ['Martes', { money: 0, unitsSold: 0 }],
-    3: ['Miercoles', { money: 0, unitsSold: 0 }],
-    4: ['Jueves', { money: 0, unitsSold: 0 }],
-    5: ['Viernes', { money: 0, unitsSold: 0 }],
-    6: ['Sabado', { money: 0, unitsSold: 0 }],
+    0: ['Dom', { money: 0, unitsSold: 0 }],
+    1: ['Lun', { money: 0, unitsSold: 0 }],
+    2: ['Mar', { money: 0, unitsSold: 0 }],
+    3: ['Mie', { money: 0, unitsSold: 0 }],
+    4: ['Jue', { money: 0, unitsSold: 0 }],
+    5: ['Vie', { money: 0, unitsSold: 0 }],
+    6: ['Sab', { money: 0, unitsSold: 0 }],
   }
 
   Object.entries(perDate).forEach(([dateString, sales]) => {

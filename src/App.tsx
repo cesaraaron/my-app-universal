@@ -6,7 +6,7 @@ import { HttpLink } from 'apollo-link-http'
 import { onError } from 'apollo-link-error'
 import { ApolloLink, Observable, Operation } from 'apollo-link'
 import { RootNavigator } from './routes'
-import { AsyncStorage } from 'react-native'
+import { AsyncStorage, NetInfo } from 'react-native'
 import { split } from 'apollo-link'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
@@ -21,6 +21,9 @@ import { alert } from './components/alert'
 import { HTTP_ENDPOINT, WS_ENDPOINT } from 'react-native-dotenv'
 import { isWeb } from './utils'
 import { FontLoading } from './components/FontLoading'
+
+const NETWORK_ERROR_MESSAGE =
+  'Ops! Al parecer algo malo esta pasando en el backend.\nIntenta de nuevo más tarde o ponte en contacto con el proveedor de la aplicación.'
 
 if (!HTTP_ENDPOINT || !WS_ENDPOINT) {
   throw new Error('Invalidad endpoints')
@@ -107,6 +110,17 @@ const client = new ApolloClient({
         )
       }
       if (networkError) {
+        if (isWeb) {
+          if (window.navigator.onLine) {
+            throw new Error(NETWORK_ERROR_MESSAGE)
+          }
+        } else {
+          NetInfo.isConnected.fetch().then(connected => {
+            if (connected) {
+              throw new Error(NETWORK_ERROR_MESSAGE)
+            }
+          })
+        }
         console.log(`[Network error]: ${networkError}`)
       }
     }),

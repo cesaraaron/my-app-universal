@@ -20,7 +20,6 @@ type StatisticsProps = NavigationScreenProps &
   SalesQueryProp &
   WithIsOnlineProps
 
-// TODO: See if it updates after a sale is made
 class Statistics extends Component<StatisticsProps> {
   componentDidMount() {
     this.props.navigation.addListener('willFocus', () =>
