@@ -1,19 +1,18 @@
 import React, { Component } from 'react'
-import { Content, List, ListItem, Text } from 'native-base'
+import { Content, ListItem, Text } from 'native-base'
 import { SalesQueryProp, createWithSales } from '../HOCs'
 import { compose } from 'react-apollo'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
 import { NavigationScreenProps, withNavigation } from 'react-navigation'
-import { getBestsellingProduct, getSaleStatistics } from '../utils'
 import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
 import {
-  getTheTenBestSellingProducts,
+  getTheSixBestSellingProducts,
   getTotalNumberOfSales,
   getIncomes,
 } from '../stats'
 import { BarChart, PieChart } from 'react-native-chart-kit'
-import { Dimensions } from 'react-native'
+import { Dimensions, View, StyleSheet } from 'react-native'
 
 type StatisticsProps = NavigationScreenProps &
   SalesQueryProp &
@@ -25,6 +24,9 @@ class Statistics extends Component<StatisticsProps> {
     this.props.navigation.addListener('willFocus', () =>
       this.props.feedSales.refetch()
     )
+    Dimensions.addEventListener('change', () => {
+      this.forceUpdate()
+    })
   }
 
   render() {
@@ -42,10 +44,8 @@ class Statistics extends Component<StatisticsProps> {
 
     return (
       <Content style={{ backgroundColor: '#f4f4f4' }}>
-        <List style={{ backgroundColor: 'white' }}>
-          {this._renderBestSellingProducts()}
-          {this._renderNumberOfSalesStats()}
-        </List>
+        {this._renderBestSellingProducts()}
+        {this._renderNumberOfSalesStats()}
       </Content>
     )
   }
@@ -59,25 +59,33 @@ class Statistics extends Component<StatisticsProps> {
       return null
     }
 
-    const bestSelling = getTheTenBestSellingProducts(sales)
+    const pieColor = randomColor()
+    const bestSelling = getTheSixBestSellingProducts(sales)
 
     return (
       <React.Fragment>
         <ListItem itemDivider>
           <Text style={marginTop}>Productos mas vendidos</Text>
         </ListItem>
+
         <PieChart
           data={bestSelling.map(p => ({ name: p.name, unidades: p.unitsSold }))}
           width={Dimensions.get('window').width}
           height={220}
           chartConfig={{
-            // backgroundColor: randomColor(),
-            backgroundGradientFrom: 'rgba(54, 162, 235, 1)',
-            backgroundGradientTo: 'rgba(54, 162, 235, 1)',
+            backgroundGradientFrom: pieColor,
+            backgroundGradientTo: pieColor,
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
           }}
           accessor="unidades"
         />
+        <View style={styles.statsTextContainer}>
+          <Text note style={styles.textStats}>
+            {bestSelling.map(
+              p => ` - ${p.name}: ${p.unitsSold} ${unity(p.unitsSold)}`
+            )}
+          </Text>
+        </View>
       </React.Fragment>
     )
   }
@@ -91,6 +99,9 @@ class Statistics extends Component<StatisticsProps> {
       return null
     }
 
+    const chartColorOne = randomColor()
+    const chartColorTwo = randomColor()
+
     const numberOfSales = getTotalNumberOfSales(sales)
     const incomes = getIncomes(sales)
 
@@ -99,102 +110,61 @@ class Statistics extends Component<StatisticsProps> {
         <ListItem itemDivider>
           <Text style={marginTop}>Ventas</Text>
         </ListItem>
-        <ListItem>
-          <BarChart
-            width={Dimensions.get('window').width} // from react-native
-            height={220}
-            data={{
-              labels: numberOfSales.labels,
-              datasets: [
-                {
-                  data: numberOfSales.data,
-                },
-              ],
-            }}
-            chartConfig={{
-              // backgroundColor: '#e26a00',
-              backgroundGradientFrom: 'rgba(54, 162, 235, 1)',
-              backgroundGradientTo: 'rgba(54, 162, 235, 1)',
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              // style: {
-              //   borderRadius: 16
-              // }
-            }}
-            bezier
-            style={{
-              marginVertical: 8,
-              borderRadius: 16,
-            }}
-          />
-        </ListItem>
-        <ListItem>
-          <BarChart
-            data={{
-              labels: incomes.labels,
-              datasets: [
-                {
-                  data: incomes.data,
-                },
-              ],
-            }}
-            chartConfig={{
-              backgroundColor: '#e26a00',
-              backgroundGradientFrom: '#fb8c00',
-              backgroundGradientTo: '#ffa726',
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
-                borderRadius: 16,
+        <BarChart
+          width={Dimensions.get('window').width}
+          height={220}
+          data={{
+            labels: numberOfSales.labels,
+            datasets: [
+              {
+                data: numberOfSales.data,
               },
-            }}
-          />
-        </ListItem>
-      </React.Fragment>
-    )
-  }
-
-  _renderStatistics = () => {
-    const {
-      feedSales: { sales },
-    } = this.props
-    if (!sales) {
-      return null
-    }
-
-    const bestSelling = getBestsellingProduct(sales)
-    const { totalMoney, totalUnits } = getSaleStatistics(sales)
-
-    return (
-      <React.Fragment>
-        {bestSelling.length ? (
-          <ListItem itemDivider>
-            <Text style={marginTop}>Producto mas vendido</Text>
-          </ListItem>
-        ) : null}
-        {bestSelling.map(({ name, unitsSold }, idx) => {
-          return (
-            <ListItem key={idx}>
-              <Text>{name}</Text>
-              <Text note style={listItemNote}>{`${unitsSold} ${
-                unitsSold === 1 ? 'unidad' : 'unidades'
-              } vendidas`}</Text>
-            </ListItem>
-          )
-        })}
-        <ListItem itemDivider>
-          <Text style={marginTop}>Unidades vendidas</Text>
-        </ListItem>
-        <ListItem>
-          <Text>{totalUnits}</Text>
-          <Text note style={listItemNote}>{`${
-            Number(totalUnits) === 1 ? 'unidad vendida' : 'unidades vendidas'
-          }`}</Text>
-        </ListItem>
-        <ListItem itemDivider>
-          <Text style={marginTop}>Dinero total</Text>
-        </ListItem>
-        <ListItem>
-          <Text>Lps. {totalMoney}</Text>
-        </ListItem>
+            ],
+          }}
+          chartConfig={{
+            backgroundGradientFrom: chartColorOne,
+            backgroundGradientTo: chartColorOne,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          }}
+        />
+        <View style={styles.statsTextContainer}>
+          <Text note style={styles.textStats}>
+            {numberOfSales.data
+              .map(
+                (n, index) =>
+                  ` — ${numberOfSales.labels[index]}: ${n} ${unity(n)}`
+              )
+              .filter((_, idx) => numberOfSales.data[idx] !== 0)}
+          </Text>
+        </View>
+        <BarChart
+          width={Dimensions.get('window').width}
+          height={220}
+          data={{
+            labels: incomes.labels,
+            datasets: [
+              {
+                data: incomes.data,
+              },
+            ],
+          }}
+          chartConfig={{
+            backgroundGradientFrom: chartColorTwo,
+            backgroundGradientTo: chartColorTwo,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          }}
+        />
+        <Text note style={styles.textStats}>
+          {incomes.data
+            .map(
+              (money, index) =>
+                ` — ${incomes.labels[index]}: Lps. ${money.toLocaleString(
+                  'es-HN',
+                  { minimumFractionDigits: 2 }
+                )}`
+            )
+            .filter((_, idx) => incomes.data[idx] !== 0)}
+        </Text>
       </React.Fragment>
     )
   }
@@ -214,13 +184,16 @@ export default EnhancedStatistics
 
 // const formatter = Intl.NumberFormat('es-HN', { minimumFractionDigits: 2 })
 
-const listItemNote = {
-  paddingLeft: 5,
-}
-
 const marginTop = {
   marginTop: 10,
 }
 
+const styles = StyleSheet.create({
+  statsTextContainer: { justifyContent: 'center', marginBottom: 15 },
+  textStats: { padding: 10 },
+})
+
 const randomColor = () =>
   ('#' + ((Math.random() * 0xffffff) << 0).toString(16) + '000000').slice(0, 7)
+
+const unity = (u: number) => (u === 0 ? '' : u === 1 ? 'unidad' : 'unidades')

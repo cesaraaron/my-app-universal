@@ -9,7 +9,7 @@ import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
 import { Bar, Doughnut, defaults } from 'react-chartjs-2'
 import {
   getTotalNumberOfSales,
-  getTheTenBestSellingProducts,
+  getTheSixBestSellingProducts,
   getIncomes,
 } from '../stats'
 
@@ -166,7 +166,7 @@ class Statistics extends Component<StatisticsProps> {
       return null
     }
 
-    const bestSelling = getTheTenBestSellingProducts(sales)
+    const bestSelling = getTheSixBestSellingProducts(sales)
 
     return (
       <React.Fragment>
