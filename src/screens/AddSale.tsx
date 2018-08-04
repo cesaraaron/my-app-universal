@@ -341,6 +341,7 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     quantity,
     initialQuantity = 0,
   }: addProductToCart) => {
+    const { entries } = this.props
     const { cartProducts, products } = this.state
 
     const quantityToAdd = quantity || 1
@@ -348,6 +349,19 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     let [productToAdd] = products.filter(p => p.id === productId)
 
     let quantityAvailable = productToAdd.quantity + initialQuantity
+
+    if (entries.find(e => e.id === productId)) {
+      // When showing an alert in ios after a modal is being close produces an unexpected shutdown.
+      setTimeout(() => {
+        alert(
+          'Error',
+          `El producto '${
+            productToAdd.name
+          }' no puede agregarse a la venta por que aún no ha sido guardado en la base de datos.`
+        )
+      }, 1000)
+      return
+    }
 
     if (quantityToAdd > quantityAvailable) {
       setTimeout(() => {

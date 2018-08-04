@@ -6,7 +6,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "jsx": "react",
-    "lib": ["dom", "es2015", "es2016"],
+    "lib": ["dom", "es2015", "es2016", "es2017.object"],
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "noEmitHelpers": true,
@@ -14,7 +14,8 @@
     "strict": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "downlevelIteration": true
   },
   "files": ["./globals.d.ts"]
 }

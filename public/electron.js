@@ -82,5 +82,8 @@ autoUpdater.on('update-downloaded', (ev, info) => {
 })
 
 app.on('ready', () => {
-  autoUpdater.checkForUpdates()
+  // Check for updates every 5 minutes
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, 300000)
 })

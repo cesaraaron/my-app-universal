@@ -271,11 +271,6 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
 
         if (!createProduct.__optimistic) {
           removeId(optimisticId)
-
-          alert(
-            '',
-            `El producto "${createProduct.name}" fue creado exitosamente.`
-          )
         }
 
         let data = proxy.readQuery({
@@ -342,10 +337,6 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
 
         if (!updateProduct.__optimistic) {
           removeId(productId)
-          alert(
-            '',
-            `El producto "${updateProduct.name}"\n fue guardado exitosamente`
-          )
         }
 
         let data = store.readQuery({
