@@ -18,8 +18,6 @@ import { Modal } from 'antd-mobile-rn'
 import { UpdateUserMutation, MeQuery } from '../__generated__/types'
 import { ME_QUERY } from '../queries'
 
-const { prompt } = Modal
-
 type SettingsProps = WithCurrentUserProps &
   NavigationScreenProps<{}> &
   WithAuthProps &
@@ -55,9 +53,9 @@ class Settings extends Component<SettingsProps> {
         </ListItem>
         <ListItem
           onPress={() =>
-            prompt(
-              'Notificaciones',
+            Modal.prompt(
               '',
+              'Entra la nueva cantidad',
               [
                 { text: 'Cancelar' },
                 { text: 'Aceptar', onPress: this._onPromptSubmit },

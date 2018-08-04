@@ -43,8 +43,6 @@ import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 import { Modal } from 'antd-mobile-rn'
 import { alert } from '../components/alert'
 
-const { prompt } = Modal
-
 type Partial<T> = { [P in keyof T]?: T[P] }
 
 type addProductToCart = {
@@ -189,9 +187,9 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
                 if (!isWeb) {
                   Keyboard.dismiss()
                 }
-                prompt(
-                  'Cantidad a vender',
+                Modal.prompt(
                   '',
+                  'Ingresa la cantidad a vender.',
                   [
                     {
                       text: 'Cancelar',
@@ -240,9 +238,9 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
                   Keyboard.dismiss()
                 }
 
-                prompt(
-                  'Modificar cantidad',
+                Modal.prompt(
                   '',
+                  'Modifica la cantidad a vender.',
                   [
                     {
                       text: 'Eliminar',
