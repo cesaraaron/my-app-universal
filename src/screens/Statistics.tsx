@@ -11,7 +11,7 @@ import {
   getTotalNumberOfSales,
   getIncomes,
 } from '../stats'
-import { BarChart, PieChart } from 'react-native-chart-kit'
+import { BarChart } from 'react-native-chart-kit'
 import { Dimensions, View, StyleSheet } from 'react-native'
 
 type StatisticsProps = NavigationScreenProps &
@@ -68,16 +68,22 @@ class Statistics extends Component<StatisticsProps> {
           <Text style={marginTop}>Productos mas vendidos</Text>
         </ListItem>
 
-        <PieChart
-          data={bestSelling.map(p => ({ name: p.name, unidades: p.unitsSold }))}
+        <BarChart
           width={Dimensions.get('window').width}
           height={220}
+          data={{
+            labels: bestSelling.map(p => p.name),
+            datasets: [
+              {
+                data: bestSelling.map(p => p.unitsSold),
+              },
+            ],
+          }}
           chartConfig={{
             backgroundGradientFrom: pieColor,
             backgroundGradientTo: pieColor,
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
           }}
-          accessor="unidades"
         />
         <View style={styles.statsTextContainer}>
           <Text note style={styles.textStats}>
