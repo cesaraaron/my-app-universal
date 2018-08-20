@@ -138,7 +138,9 @@ class Statistics extends Component<StatisticsProps> {
             {numberOfSales.data
               .map(
                 (n, index) =>
-                  ` — ${numberOfSales.labels[index]}: ${n} ${unity(n)}`
+                  ` — ${numberOfSales.labels[index]}: ${n} ${
+                    n === 1 ? 'venta' : 'ventas'
+                  }`
               )
               .filter((_, idx) => numberOfSales.data[idx] !== 0)}
           </Text>
