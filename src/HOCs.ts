@@ -20,6 +20,7 @@ import {
   ME_QUERY,
   SAVE_DEVICE_TOKEN_MUTATION,
   REMOVE_DEVICE_TOKEN,
+  UPDATE_NOTIS_MUTATION,
 } from './queries'
 import {
   LoginMutation,
@@ -50,6 +51,8 @@ import {
   SaveDeviceTokenMutationVariables,
   RemoveDeviceTokenMutation,
   RemoveDeviceTokenMutationVariables,
+  UpdateNotisMutation,
+  UpdateNotisMutationVariables,
 } from './__generated__/types'
 
 // Me
@@ -322,4 +325,21 @@ export const withRemoveDeviceToken = graphql<withRemoveDeviceToken>(
 
 export type RemoveDeviceTokenMutationProps = {
   removeDeviceToken: withRemoveDeviceToken['mutate']
+}
+
+type withUpdateNotisProps = ChildMutateProps<
+  {},
+  UpdateNotisMutation,
+  UpdateNotisMutationVariables
+>
+
+export const withUpdateNotis = graphql<withUpdateNotisProps>(
+  UPDATE_NOTIS_MUTATION,
+  {
+    name: 'updateNotis',
+  }
+)
+
+export type UpdateNotisMutationProps = {
+  updateNotis: withUpdateNotisProps['mutate']
 }

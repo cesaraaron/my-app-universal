@@ -284,3 +284,13 @@ export const REMOVE_DEVICE_TOKEN = gql`
     }
   }
 `
+
+export const UPDATE_NOTIS_MUTATION = gql`
+  mutation UpdateNotis($fireWhen: Int!) {
+    updateNotis(fireWhen: $fireWhen) {
+      notifications {
+        fireWhen
+      }
+    }
+  }
+`

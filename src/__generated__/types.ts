@@ -389,6 +389,20 @@ export interface RemoveDeviceTokenMutation {
   } | null
 }
 
+export interface UpdateNotisMutationVariables {
+  fireWhen: number
+}
+
+export interface UpdateNotisMutation {
+  updateNotis: {
+    __typename: 'User'
+    notifications: {
+      __typename: 'Notifications'
+      fireWhen: number
+    }
+  } | null
+}
+
 export interface UserFragment {
   __typename: 'User'
   id: string

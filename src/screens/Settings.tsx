@@ -8,6 +8,8 @@ import {
   UpdateUserMutationProps,
   withRemoveDeviceToken,
   RemoveDeviceTokenMutationProps,
+  withUpdateNotis,
+  UpdateNotisMutationProps,
 } from '../HOCs'
 import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 import { withAuth, WithAuthProps } from '../Providers/Auth'
@@ -15,7 +17,7 @@ import { Notifications } from 'expo'
 import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
 import { alert } from '../components/alert'
 import { Modal } from 'antd-mobile-rn'
-import { UpdateUserMutation, MeQuery } from '../__generated__/types'
+import { MeQuery, UpdateNotisMutation } from '../__generated__/types'
 import { ME_QUERY } from '../queries'
 
 type SettingsProps = WithCurrentUserProps &
@@ -23,7 +25,8 @@ type SettingsProps = WithCurrentUserProps &
   WithAuthProps &
   UpdateUserMutationProps &
   WithIsOnlineProps &
-  RemoveDeviceTokenMutationProps
+  RemoveDeviceTokenMutationProps &
+  UpdateNotisMutationProps
 
 const defaultFireWhen = 0
 
@@ -128,35 +131,30 @@ class Settings extends Component<SettingsProps> {
   }
 
   _onPromptSubmit = (quantity: string) => {
-    const { updateUser, currentUser } = this.props
+    const { updateNotis } = this.props
 
     const fireWhen = Number(quantity) || 0
 
-    updateUser({
+    updateNotis({
       variables: {
-        userId: currentUser.id,
-        notifications: {
-          fireWhen,
-        },
+        fireWhen,
       },
       optimisticResponse: {
-        updateUser: {
+        updateNotis: {
           __typename: 'User',
-          ...currentUser,
           notifications: {
             __typename: 'Notifications',
-            devices: currentUser.notifications.devices,
             fireWhen,
           },
         },
       },
-      update(proxy, result) {
+      update: (proxy, result) => {
         if (!result.data) {
           return
         }
-        const { updateUser } = result.data as UpdateUserMutation
+        const { updateNotis } = result.data as UpdateNotisMutation
 
-        if (!updateUser) {
+        if (!updateNotis) {
           return
         }
 
@@ -164,7 +162,14 @@ class Settings extends Component<SettingsProps> {
           query: ME_QUERY,
         }) as MeQuery
 
-        data.me = updateUser
+        if (!data.me) {
+          return
+        }
+
+        data.me = {
+          ...data.me,
+          notifications: { ...data.me.notifications, fireWhen },
+        }
 
         proxy.writeQuery({ query: ME_QUERY, data })
       },
@@ -209,6 +214,7 @@ const EnhancedSettings = compose(
   withUpdateUser,
   withAuth,
   withIsOnline,
+  withUpdateNotis,
   withRemoveDeviceToken
 )(Settings)
 
