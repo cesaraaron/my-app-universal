@@ -43,15 +43,16 @@ export class Auth extends Component<AuthProps, AuthState> {
       this.setState({ isSignedIn: !!val, loading: false })
     })
 
-  signIn = (token: string) => {
-    return AsyncStorage.setItem(AUTH_TOKEN, token).then(this.isSignedIn)
+  signIn = async (token: string) => {
+    await AsyncStorage.setItem(AUTH_TOKEN, token)
+    await this.isSignedIn()
+    this.forceUpdate()
   }
 
-  signOut = () => {
-    return Promise.all([
-      persistor.purge(),
-      AsyncStorage.setItem(AUTH_TOKEN, ''),
-    ]).then(this.isSignedIn)
+  signOut = async () => {
+    await AsyncStorage.setItem(AUTH_TOKEN, '')
+    await this.isSignedIn()
+    await persistor.purge()
   }
 
   render() {

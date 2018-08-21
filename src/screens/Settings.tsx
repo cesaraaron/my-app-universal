@@ -181,17 +181,23 @@ class Settings extends Component<SettingsProps> {
       )
       return
     }
-    const token = await Notifications.getExpoPushTokenAsync()
 
-    if (token) {
-      removeDeviceToken({
+    try {
+      const token = await Notifications.getExpoPushTokenAsync()
+
+      if (!token) {
+        await signOut()
+        return
+      }
+
+      await removeDeviceToken({
         variables: {
           token,
         },
-      }).then(() => {
-        signOut()
       })
-    } else {
+
+      signOut()
+    } catch {
       signOut()
     }
   }
