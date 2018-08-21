@@ -9,7 +9,10 @@ class RegisterPushNotification extends React.Component<
   RegisterPushNotificationProps
 > {
   async componentDidMount() {
-    const token = await registerForPushNotificationsAsync()
+    let token
+    try {
+      token = await registerForPushNotificationsAsync()
+    } catch {}
 
     this.saveUserToken(token)
   }
