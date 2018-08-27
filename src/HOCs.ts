@@ -17,7 +17,6 @@ import {
   CREATE_SALE_MUTATION,
   DELETE_SALE_MUTATION,
   GET_SALES,
-  ME_QUERY,
   SAVE_DEVICE_TOKEN_MUTATION,
   REMOVE_DEVICE_TOKEN,
   UPDATE_NOTIS_MUTATION,
@@ -46,7 +45,6 @@ import {
   getSalesQuery,
   CreateLogMutation,
   CreateLogMutationVariables,
-  MeQuery,
   SaveDeviceTokenMutation,
   SaveDeviceTokenMutationVariables,
   RemoveDeviceTokenMutation,
@@ -54,19 +52,6 @@ import {
   UpdateNotisMutation,
   UpdateNotisMutationVariables,
 } from './__generated__/types'
-
-// Me
-type MeDataProps = ChildDataProps<{}, MeQuery, {}>
-
-export const withMe = graphql<MeDataProps>(ME_QUERY, {
-  options: {
-    fetchPolicy: 'cache-and-network',
-    errorPolicy: 'all',
-    pollInterval: 30000,
-  },
-})
-
-export type MeProps = MeDataProps
 
 // Login
 type withLoginProps = ChildMutateProps<

@@ -1,12 +1,10 @@
 import React from 'react'
 import { UserType } from '../HOCs'
 import Loading from '../components/Loading'
-import { Query } from 'react-apollo'
-import { MeQuery as MeQueryData } from '../__generated__/types'
+import { ChildDataProps, graphql } from 'react-apollo'
 import { ME_QUERY } from '../queries'
 import { FetchError } from '../components/FetchError'
-
-class MeQuery extends Query<MeQueryData> {}
+import { MeQuery } from '../__generated__/types'
 
 type UserContextValue = {
   currentUser: UserType
@@ -35,24 +33,41 @@ const UserContext = React.createContext<UserContextValue>({
   },
 })
 
-type CurrentUserProps = {
+type CurrentUserExternalProps = {
   signOut(): Promise<void>
   children: JSX.Element | (JSX.Element | null)[]
 }
 
-export const CurrentUserProvider = ({
-  children,
-  signOut,
-}: CurrentUserProps) => (
-  <MeQuery query={ME_QUERY} errorPolicy="all">
-    {({ loading, data, error, refetch }) => {
+type MeDataProps = ChildDataProps<CurrentUserExternalProps, MeQuery, {}>
+
+const withMe = graphql<CurrentUserExternalProps, MeQuery, {}, MeDataProps>(
+  ME_QUERY,
+  {
+    options: {
+      fetchPolicy: 'cache-and-network',
+      errorPolicy: 'all',
+    },
+  }
+)
+
+type CurrentUserInternalProps = CurrentUserExternalProps & MeDataProps
+
+export const CurrentUserProvider = withMe(
+  class CurrentUser extends React.Component<CurrentUserInternalProps> {
+    render() {
+      const {
+        children,
+        signOut,
+        data: { error, loading, refetch, me },
+      } = this.props
+
       if (loading) {
         return <Loading />
       }
 
       // The token of the logged user is saved in AsyncStorage but if it is
-      // an invalid token then the server won't return the user, so logout
-      if (!data || !data.me) {
+      // an invalid token then the server won't return a user, so logout
+      if (!me) {
         return <SignOut signOut={signOut} />
       }
 
@@ -61,12 +76,12 @@ export const CurrentUserProvider = ({
       }
 
       return (
-        <UserContext.Provider value={{ currentUser: data.me }}>
+        <UserContext.Provider value={{ currentUser: me }}>
           {children}
         </UserContext.Provider>
       )
-    }}
-  </MeQuery>
+    }
+  }
 )
 
 export const CurrentUserConsumer = UserContext.Consumer
