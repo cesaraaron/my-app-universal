@@ -14,7 +14,7 @@ import {
 import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 import { withAuth, WithAuthProps } from '../Providers/Auth'
 import { Notifications } from 'expo'
-import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
+import { withIsOnline, IsOnlineInjectProps } from '../Providers/IsOnline'
 import { alert } from '../components/alert'
 import { Modal } from 'antd-mobile-rn'
 import { MeQuery, UpdateNotisMutation } from '../__generated__/types'
@@ -24,7 +24,7 @@ type SettingsProps = WithCurrentUserProps &
   NavigationScreenProps<{}> &
   WithAuthProps &
   UpdateUserMutationProps &
-  WithIsOnlineProps &
+  IsOnlineInjectProps &
   RemoveDeviceTokenMutationProps &
   UpdateNotisMutationProps
 

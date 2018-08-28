@@ -76,6 +76,15 @@ export const GET_PRODUCTS = gql`
   ${ProductFragments}
 `
 
+export const GET_PRODUCTS_WITH_IDS = gql`
+  query ProductsWithIds($ids: [ID!]!) {
+    productsWithIds(ids: $ids) {
+      ...Product
+    }
+  }
+  ${ProductFragments}
+`
+
 export const PRODUCT_SUBSCRIPTION = gql`
   subscription Product {
     product {

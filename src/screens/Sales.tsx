@@ -7,7 +7,7 @@ import { compose } from 'react-apollo'
 import { FetchError } from '../components/FetchError'
 import { moment, getSaleStatistics, isWeb } from '../utils'
 import sortBy from 'lodash/sortBy'
-import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
+import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
 import { SALE_SUBSCRIPTION } from '../queries'
 import {
   getSalesQuery,
@@ -18,7 +18,7 @@ import { Notifications } from 'expo'
 import { EventSubscription } from 'fbemitter'
 import { NotificationData } from '../types'
 
-type SalesProps = NavigationScreenProps & SalesQueryProp & WithIsOnlineProps
+type SalesProps = NavigationScreenProps & SalesQueryProp & IsOnlineInjectProps
 
 class Sales extends Component<SalesProps> {
   listen?: EventSubscription
@@ -38,13 +38,13 @@ class Sales extends Component<SalesProps> {
   listenToNotifications = (payload: Notifications.Notification) => {
     const { navigation } = this.props
     const { data } = payload
-    const { products } = data as NotificationData
+    const { fireWhenProductIds } = data as NotificationData
 
-    if (!products) {
+    if (!fireWhenProductIds) {
       return
     }
 
-    navigation.navigate('NotificationCenter', { products })
+    navigation.navigate('NotificationCenter', { fireWhenProductIds })
   }
 
   render() {

@@ -15,7 +15,7 @@ import { LoginMutationProps, withLogin } from '../HOCs'
 import { WithAuthProps, withAuth } from '../Providers/Auth'
 import {
   withIsOnline,
-  WithIsOnlineProps,
+  IsOnlineInjectProps,
   OfflineBanner,
 } from '../Providers/IsOnline'
 import { alert } from '../components/alert'
@@ -25,7 +25,7 @@ type LoginState = {
   password: string
 }
 
-type LoginProps = LoginMutationProps & WithAuthProps & WithIsOnlineProps
+type LoginProps = LoginMutationProps & WithAuthProps & IsOnlineInjectProps
 
 class Login extends Component<LoginProps, LoginState> {
   state = {

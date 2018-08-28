@@ -35,7 +35,7 @@ import {
 import { ID } from '../utils'
 import { GET_USERS } from '../queries'
 import { OptimisticProp } from '../types'
-import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
+import { withIsOnline, IsOnlineInjectProps } from '../Providers/IsOnline'
 import {
   PendingMutationsInjectProps,
   withPendingMutations,
@@ -56,7 +56,7 @@ type AddUserProps = NavigationScreenProps<{
   UpdateUserMutationProps &
   CreateUserMutationProps &
   DeleteUserMutationProps &
-  WithIsOnlineProps &
+  IsOnlineInjectProps &
   PendingMutationsInjectProps
 
 type InitialValues = {

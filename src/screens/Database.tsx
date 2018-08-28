@@ -22,7 +22,7 @@ import { ProductsQueryProps, withProducts, ProductType } from '../HOCs'
 import { searchProductWithQuery } from '../utils'
 import sortBy from 'lodash/sortBy'
 import { PRODUCT_SUBSCRIPTION } from '../queries'
-import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
+import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
 import {
   PendingMutationsInjectProps,
   withPendingMutations,
@@ -30,7 +30,7 @@ import {
 
 type DatabaseProps = ProductsQueryProps &
   NavigationScreenProps &
-  WithIsOnlineProps &
+  IsOnlineInjectProps &
   PendingMutationsInjectProps
 
 type DatabaseState = {

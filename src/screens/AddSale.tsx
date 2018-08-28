@@ -33,7 +33,7 @@ import {
   getProductsQuery,
 } from '../__generated__/types'
 import { GET_SALES, GET_PRODUCTS } from '../queries'
-import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
+import { withIsOnline, IsOnlineInjectProps } from '../Providers/IsOnline'
 import { OptimisticProp } from '../types'
 import {
   withPendingMutations,
@@ -56,7 +56,7 @@ type AddSaleProps = NavigationScreenProps<{ sale: SaleType & OptimisticProp }> &
   WithCurrentUserProps &
   CreateSaleMutationProp &
   DeleteSaleMutationProp &
-  WithIsOnlineProps &
+  IsOnlineInjectProps &
   PendingMutationsInjectProps
 
 type CartProductWithTypeName = SaleType['products'][0]

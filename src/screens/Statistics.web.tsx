@@ -5,7 +5,7 @@ import { compose } from 'react-apollo'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
 import { NavigationScreenProps, withNavigation } from 'react-navigation'
-import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
+import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
 import { Bar, Doughnut, defaults } from 'react-chartjs-2'
 import {
   getTotalNumberOfSales,
@@ -18,7 +18,7 @@ defaults.global.legend.position = 'bottom'
 
 type StatisticsProps = NavigationScreenProps &
   SalesQueryProp &
-  WithIsOnlineProps
+  IsOnlineInjectProps
 
 class Statistics extends Component<StatisticsProps> {
   componentDidMount() {

@@ -101,6 +101,22 @@ export interface getProductsQuery {
   }>
 }
 
+export interface ProductsWithIdsQueryVariables {
+  ids: Array<string>
+}
+
+export interface ProductsWithIdsQuery {
+  productsWithIds: Array<{
+    __typename: 'Product'
+    id: string
+    name: string
+    createdAt: string
+    updatedAt: string
+    quantity: number
+    price: number
+  }>
+}
+
 export interface ProductSubscription {
   product: {
     __typename: 'ProductSubscriptionPayload'

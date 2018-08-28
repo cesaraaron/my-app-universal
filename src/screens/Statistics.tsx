@@ -5,7 +5,7 @@ import { compose } from 'react-apollo'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
 import { NavigationScreenProps, withNavigation } from 'react-navigation'
-import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
+import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
 import {
   getTheSixBestSellingProducts,
   getTotalNumberOfSales,
@@ -16,7 +16,7 @@ import { Dimensions, View, StyleSheet } from 'react-native'
 
 type StatisticsProps = NavigationScreenProps &
   SalesQueryProp &
-  WithIsOnlineProps
+  IsOnlineInjectProps
 
 class Statistics extends Component<StatisticsProps> {
   // Use subscription to update the sales instead of re-rendering on focus

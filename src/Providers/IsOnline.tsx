@@ -61,10 +61,10 @@ export class IsOnlineProvider extends Component<IsOnlineProps, IsOnlineState> {
 
 export const IsOnlineConsumer = IsOnlineContext.Consumer
 
-export type WithIsOnlineProps = IsOnlineContextValue
+export type IsOnlineInjectProps = IsOnlineContextValue
 
-export const withIsOnline = (
-  WrappedComponent: React.ComponentType<WithIsOnlineProps>
+export const withIsOnline = <EProps extends {}>(
+  WrappedComponent: React.ComponentType<EProps & IsOnlineInjectProps>
 ) => (props: {}) => (
   <IsOnlineContext.Consumer>
     {({ isOnline }) => <WrappedComponent {...props} isOnline={isOnline} />}

@@ -31,7 +31,7 @@ import {
   getProductsQuery,
   UserPermissions,
 } from '../__generated__/types'
-import { withIsOnline, WithIsOnlineProps } from '../Providers/IsOnline'
+import { withIsOnline, IsOnlineInjectProps } from '../Providers/IsOnline'
 import { OptimisticProp } from '../types'
 import {
   PendingMutationsInjectProps,
@@ -44,7 +44,7 @@ type AddProductProps = CreateProductMutationProp &
   UpdateProductMutationProp &
   DeleteProductMutationProp &
   NavigationScreenProps<{ product: ProductType & OptimisticProp }> &
-  WithIsOnlineProps &
+  IsOnlineInjectProps &
   WithCurrentUserProps &
   PendingMutationsInjectProps
 

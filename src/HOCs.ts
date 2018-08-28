@@ -20,6 +20,7 @@ import {
   SAVE_DEVICE_TOKEN_MUTATION,
   REMOVE_DEVICE_TOKEN,
   UPDATE_NOTIS_MUTATION,
+  GET_PRODUCTS_WITH_IDS,
 } from './queries'
 import {
   LoginMutation,
@@ -51,7 +52,12 @@ import {
   RemoveDeviceTokenMutationVariables,
   UpdateNotisMutation,
   UpdateNotisMutationVariables,
+  ProductsWithIdsQuery,
+  ProductsWithIdsQueryVariables,
 } from './__generated__/types'
+import { NavigationInjectedProps } from 'react-navigation'
+import { NotificationData } from './types'
+import { IsOnlineInjectProps } from './Providers/IsOnline'
 
 // Login
 type withLoginProps = ChildMutateProps<
@@ -90,6 +96,32 @@ export const withProducts = createWithProducts({ pollInterval: 30000 })
 export type ProductsQueryProps = {
   feedProducts: withProductsProps['data']
 }
+
+type ProductWithIdsExternalProps = NavigationInjectedProps<NotificationData> &
+  IsOnlineInjectProps
+
+export type ProductWithIdsChildProps = ChildDataProps<
+  ProductWithIdsExternalProps,
+  ProductsWithIdsQuery,
+  ProductsWithIdsQueryVariables
+>
+
+export const withProductsWithIds = graphql<
+  ProductWithIdsExternalProps,
+  ProductsWithIdsQuery,
+  ProductsWithIdsQueryVariables,
+  ProductWithIdsChildProps
+>(GET_PRODUCTS_WITH_IDS, {
+  options: ({ navigation }) => ({
+    variables: {
+      ids: navigation.getParam('fireWhenProductIds') || [],
+    },
+    fetchPolicy: 'cache-and-network',
+    errorPolicy: 'all',
+  }),
+})
+
+// export type ProductsWithIdsProps = ProductWithIdsChildProps
 
 type withCreateProductProps = ChildMutateProps<
   {},

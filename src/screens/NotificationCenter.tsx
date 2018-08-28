@@ -1,48 +1,63 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Content, List, ListItem, Text, Body } from 'native-base'
-import { NavigationScreenProps } from 'react-navigation'
-import { NotificationData } from '../types'
+import { Content, List, ListItem, Text, Body, Right, Icon } from 'native-base'
+import { withNavigation } from 'react-navigation'
+import { withProductsWithIds } from '../HOCs'
+import { FetchError } from '../components/FetchError'
+import { withIsOnline } from '../Providers/IsOnline'
+import Loading from '../components/Loading'
 
-type NotificationCenterProps = NavigationScreenProps<NotificationData>
+export default withIsOnline(
+  withNavigation(
+    withProductsWithIds(props => {
+      const {
+        isOnline,
+        navigation,
+        data: { error, loading, refetch, productsWithIds = [] },
+      } = props
 
-// TODO: on pressing the partial product item it should navigate to AddProduct
-export class NotificationCenter extends React.Component<
-  NotificationCenterProps
-> {
-  render() {
-    const { navigation } = this.props
-    const products = navigation.getParam('products')
+      if (isOnline && loading) {
+        return <Loading />
+      }
+      if (error) {
+        return <FetchError refetch={refetch} error={error} />
+      }
 
-    if (!products) {
-      return null
-    }
-
-    return (
-      <View style={{ flex: 1 }}>
-        <Content style={{ backgroundColor: '#f4f4f4' }}>
-          <List style={{ backgroundColor: 'white' }}>
-            <ListItem itemDivider>
-              <Text note style={{ marginTop: 20 }}>
-                Los siguientes productos se estan acabando:
-              </Text>
-            </ListItem>
-            {products.map(({ id, name, quantity }) => (
-              <ListItem key={id}>
-                <Body>
-                  <Text>{name}</Text>
-                  <Text note>
-                    {quantity}{' '}
-                    {quantity === 1
-                      ? 'unidad disponible'
-                      : 'unidades disponibles'}
-                  </Text>
-                </Body>
+      return (
+        <View style={{ flex: 1 }}>
+          <Content style={{ backgroundColor: '#f4f4f4' }}>
+            <List style={{ backgroundColor: 'white' }}>
+              <ListItem itemDivider>
+                <Text note style={{ marginTop: 20 }}>
+                  Los siguientes productos se estan acabando:
+                </Text>
               </ListItem>
-            ))}
-          </List>
-        </Content>
-      </View>
-    )
-  }
-}
+              {productsWithIds.map(p => (
+                <ListItem
+                  key={p.id}
+                  button
+                  onPress={() =>
+                    navigation.navigate('AddProduct', { product: p })
+                  }
+                >
+                  <Body>
+                    <Text>{p.name}</Text>
+                    <Text note>
+                      {p.quantity}{' '}
+                      {p.quantity === 1
+                        ? 'unidad disponible'
+                        : 'unidades disponibles'}
+                    </Text>
+                  </Body>
+                  <Right>
+                    <Icon name="ios-arrow-forward" type="Ionicons" />
+                  </Right>
+                </ListItem>
+              ))}
+            </List>
+          </Content>
+        </View>
+      )
+    })
+  )
+)
