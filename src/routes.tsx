@@ -20,6 +20,7 @@ import Sales from './screens/Sales'
 import Statistics from './screens/Statistics'
 import { IsOnlineConsumer, OfflineBanner } from './Providers/IsOnline'
 import { isWeb } from './utils'
+import { NotificationCenter } from './screens/NotificationCenter'
 
 type IconType = 'MaterialCommunityIcons' | 'Ionicons' | 'FontAwesome' | 'Entypo'
 
@@ -53,7 +54,14 @@ const stackOptions = {
 
 const Home = TabNavigator(
   {
-    Sales: StackNavigator({ Sales, AddSale }, stackOptions),
+    Sales: StackNavigator(
+      {
+        Sales,
+        AddSale,
+        NotificationCenter,
+      },
+      { ...stackOptions, mode: 'modal' }
+    ),
     Database: StackNavigator({ Database, AddProduct }, stackOptions),
     Statistics: StackNavigator({ Statistics }, stackOptions),
     Settings: StackNavigator({ Settings, Users, AddUser }, stackOptions),

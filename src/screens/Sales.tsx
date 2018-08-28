@@ -5,7 +5,7 @@ import { SaleType, SalesQueryProp, withSales } from '../HOCs'
 import { NavigationScreenProps, withNavigation } from 'react-navigation'
 import { compose } from 'react-apollo'
 import { FetchError } from '../components/FetchError'
-import { moment, getSaleStatistics } from '../utils'
+import { moment, getSaleStatistics, isWeb } from '../utils'
 import sortBy from 'lodash/sortBy'
 import { WithIsOnlineProps, withIsOnline } from '../Providers/IsOnline'
 import { SALE_SUBSCRIPTION } from '../queries'
@@ -14,12 +14,37 @@ import {
   SaleSubscription,
   MutationType,
 } from '../__generated__/types'
+import { Notifications } from 'expo'
+import { EventSubscription } from 'fbemitter'
+import { NotificationData } from '../types'
 
 type SalesProps = NavigationScreenProps & SalesQueryProp & WithIsOnlineProps
 
 class Sales extends Component<SalesProps> {
+  listen?: EventSubscription
+
   componentDidMount() {
-    this._subscribeTorMore()
+    if (!isWeb) {
+      this.listen = Notifications.addListener(this.listenToNotifications)
+    }
+
+    this._subscribeToMore()
+  }
+
+  componentWillUnmount() {
+    this.listen && this.listen.remove()
+  }
+
+  listenToNotifications = (payload: Notifications.Notification) => {
+    const { navigation } = this.props
+    const { data } = payload
+    const { products } = data as NotificationData
+
+    if (!products) {
+      return
+    }
+
+    navigation.navigate('NotificationCenter', { products })
   }
 
   render() {
@@ -81,7 +106,7 @@ class Sales extends Component<SalesProps> {
     )
   }
 
-  _subscribeTorMore = () => {
+  _subscribeToMore = () => {
     const {
       feedSales: { subscribeToMore },
     } = this.props
