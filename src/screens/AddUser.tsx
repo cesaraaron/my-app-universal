@@ -81,7 +81,7 @@ class AddUser extends Component<AddUserProps, AddUserState> {
       initialValues: {
         name: '',
         phoneNumber: '',
-        permissions: [],
+        permissions: [CREATE_SALES],
         password: '',
       },
     }
