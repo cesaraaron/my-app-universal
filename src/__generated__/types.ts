@@ -96,6 +96,7 @@ export interface getProductsQuery {
     name: string
     createdAt: string
     updatedAt: string
+    notifications: boolean
     quantity: number
     price: number
   }>
@@ -112,6 +113,7 @@ export interface ProductsWithIdsQuery {
     name: string
     createdAt: string
     updatedAt: string
+    notifications: boolean
     quantity: number
     price: number
   }>
@@ -127,6 +129,7 @@ export interface ProductSubscription {
       name: string
       createdAt: string
       updatedAt: string
+      notifications: boolean
       quantity: number
       price: number
     } | null
@@ -137,6 +140,7 @@ export interface CreateProductMutationVariables {
   name: string
   price: number
   quantity: number
+  notifications: boolean
 }
 
 export interface CreateProductMutation {
@@ -146,6 +150,7 @@ export interface CreateProductMutation {
     name: string
     createdAt: string
     updatedAt: string
+    notifications: boolean
     quantity: number
     price: number
   } | null
@@ -156,6 +161,7 @@ export interface UpdateProductMutationVariables {
   name?: string | null
   price?: number | null
   quantity?: number | null
+  notifications?: boolean | null
 }
 
 export interface UpdateProductMutation {
@@ -165,6 +171,7 @@ export interface UpdateProductMutation {
     name: string
     createdAt: string
     updatedAt: string
+    notifications: boolean
     quantity: number
     price: number
   } | null
@@ -441,6 +448,7 @@ export interface ProductFragment {
   name: string
   createdAt: string
   updatedAt: string
+  notifications: boolean
   quantity: number
   price: number
 }

@@ -19,6 +19,9 @@ import {
   Button,
   Text,
   View,
+  Body,
+  Right,
+  Switch,
 } from 'native-base'
 import { Formik, FormikActions, FormikErrors } from 'formik'
 import { Keyboard } from 'react-native'
@@ -52,6 +55,7 @@ type InitialValues = {
   name: string
   quantity: string
   price: string
+  notifications: boolean
 }
 
 type AddProductState = {
@@ -70,6 +74,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
         name: '',
         price: '',
         quantity: '',
+        notifications: true,
       },
     }
 
@@ -85,6 +90,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
         name: product.name + '',
         price: product.price + '',
         quantity: product.quantity + '',
+        notifications: product.notifications,
       },
     }
 
@@ -183,6 +189,19 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
                       onChangeText={text => setFieldValue('quantity', text)}
                     />
                   </Item>
+                  <Item style={{ paddingVertical: 10 }}>
+                    <Body>
+                      <Text>Recibir notificationes de este producto:</Text>
+                    </Body>
+                    <Right>
+                      <Switch
+                        value={values.notifications}
+                        onValueChange={val =>
+                          setFieldValue('notifications', val)
+                        }
+                      />
+                    </Right>
+                  </Item>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -215,7 +234,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
   }
 
   _createProduct = (
-    { name, price, quantity }: InitialValues,
+    { name, price, quantity, notifications }: InitialValues,
     opts: FormikActions<InitialValues>
   ) => {
     const { createProduct, isOnline, addId, removeId, currentUser } = this.props
@@ -240,6 +259,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
     createProduct({
       variables: {
         name,
+        notifications,
         quantity: parseInt(quantity),
         price: parseFloat(price),
       },
@@ -307,6 +327,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
       variables: {
         productId,
         name: values.name,
+        notifications: values.notifications,
         price: parseFloat(values.price),
         quantity: parseInt(values.quantity),
       },
@@ -317,6 +338,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
           createdAt: product.createdAt,
           updatedAt: new Date().toUTCString(),
           name: values.name,
+          notifications: values.notifications,
           price: parseFloat(values.price),
           quantity: parseInt(values.quantity),
           __optimistic: true,

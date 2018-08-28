@@ -22,6 +22,7 @@ const ProductFragments = gql`
     name
     createdAt
     updatedAt
+    notifications
     quantity
     price
   }
@@ -94,6 +95,7 @@ export const PRODUCT_SUBSCRIPTION = gql`
         name
         createdAt
         updatedAt
+        notifications
         quantity
         price
       }
@@ -102,8 +104,18 @@ export const PRODUCT_SUBSCRIPTION = gql`
 `
 
 export const CREATE_PRODUCT_MUTATION = gql`
-  mutation CreateProduct($name: String!, $price: Float!, $quantity: Int!) {
-    createProduct(name: $name, price: $price, quantity: $quantity) {
+  mutation CreateProduct(
+    $name: String!
+    $price: Float!
+    $quantity: Int!
+    $notifications: Boolean!
+  ) {
+    createProduct(
+      name: $name
+      price: $price
+      quantity: $quantity
+      notifications: $notifications
+    ) {
       ...Product
     }
   }
@@ -116,12 +128,14 @@ export const UPDATE_PRODUCT_MUTATION = gql`
     $name: String
     $price: Float
     $quantity: Int
+    $notifications: Boolean
   ) {
     updateProduct(
       productId: $productId
       name: $name
       price: $price
       quantity: $quantity
+      notifications: $notifications
     ) {
       ...Product
     }
