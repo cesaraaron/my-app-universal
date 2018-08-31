@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Content, List, ListItem, Text, Body, Right, Icon } from 'native-base'
-import { withNavigation, NavigationScreenProps } from 'react-navigation'
+import { withNavigation, NavigationInjectedProps } from 'react-navigation'
 import { compose } from 'react-apollo'
 import {
   withUpdateUser,
@@ -21,7 +21,7 @@ import { MeQuery, UpdateNotisMutation } from '../__generated__/types'
 import { ME_QUERY } from '../queries'
 
 type SettingsProps = WithCurrentUserProps &
-  NavigationScreenProps<{}> &
+  NavigationInjectedProps<{}> &
   WithAuthProps &
   UpdateUserMutationProps &
   IsOnlineInjectProps &

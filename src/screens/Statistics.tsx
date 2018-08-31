@@ -4,7 +4,7 @@ import { SalesQueryProp, createWithSales } from '../HOCs'
 import { compose } from 'react-apollo'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
-import { NavigationScreenProps, withNavigation } from 'react-navigation'
+import { NavigationInjectedProps, withNavigation } from 'react-navigation'
 import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
 import {
   getTheSixBestSellingProducts,
@@ -14,7 +14,7 @@ import {
 import { BarChart } from 'react-native-chart-kit'
 import { Dimensions, View, StyleSheet } from 'react-native'
 
-type StatisticsProps = NavigationScreenProps &
+type StatisticsProps = NavigationInjectedProps &
   SalesQueryProp &
   IsOnlineInjectProps
 

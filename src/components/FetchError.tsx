@@ -24,7 +24,7 @@ export const FetchError = ({
       style={{ alignSelf: 'center', marginTop: 10 }}
       onPress={() => refetch()}
     >
-      <Text>Refrescar</Text>
+      <Text>Intentar de nuevo</Text>
     </Button>
   </View>
 )

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Alert, Keyboard } from 'react-native'
 import { compose } from 'react-apollo'
-import { withNavigation, NavigationScreenProps } from 'react-navigation'
+import { withNavigation, NavigationInjectedProps } from 'react-navigation'
 import {
   Content,
   Item,
@@ -50,7 +50,7 @@ const {
   DELETE_SALES,
 } = UserPermissions
 
-type AddUserProps = NavigationScreenProps<{
+type AddUserProps = NavigationInjectedProps<{
   user?: UserType & OptimisticProp
 }> &
   UpdateUserMutationProps &

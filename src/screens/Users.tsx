@@ -11,7 +11,7 @@ import {
   Icon,
 } from 'native-base'
 import { compose } from 'react-apollo'
-import { withNavigation, NavigationScreenProps } from 'react-navigation'
+import { withNavigation, NavigationInjectedProps } from 'react-navigation'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
 import { UsersQueryProps, UserType, withUsers } from '../HOCs'
@@ -20,7 +20,7 @@ import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 
 type UsersProps = UsersQueryProps &
   WithCurrentUserProps &
-  NavigationScreenProps<{}> &
+  NavigationInjectedProps<{}> &
   IsOnlineInjectProps
 
 class Users extends Component<UsersProps> {

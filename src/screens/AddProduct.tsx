@@ -8,7 +8,11 @@ import {
   withUpdateProduct,
   withDeleteProduct,
 } from '../HOCs'
-import { withNavigation, NavigationScreenProps } from 'react-navigation'
+import {
+  withNavigation,
+  NavigationScreenProps,
+  NavigationInjectedProps,
+} from 'react-navigation'
 import {
   Container,
   Content,
@@ -46,7 +50,7 @@ import { alert } from '../components/alert'
 type AddProductProps = CreateProductMutationProp &
   UpdateProductMutationProp &
   DeleteProductMutationProp &
-  NavigationScreenProps<{ product: ProductType & OptimisticProp }> &
+  NavigationInjectedProps<{ product: ProductType & OptimisticProp }> &
   IsOnlineInjectProps &
   WithCurrentUserProps &
   PendingMutationsInjectProps

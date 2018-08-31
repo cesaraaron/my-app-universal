@@ -2,7 +2,11 @@ import React, { Component } from 'react'
 import { Platform, RefreshControl } from 'react-native'
 import { List, ListItem, Body, Text, Button, Icon, View } from 'native-base'
 import { SaleType, SalesQueryProp, withSales } from '../HOCs'
-import { NavigationScreenProps, withNavigation } from 'react-navigation'
+import {
+  NavigationScreenProps,
+  NavigationInjectedProps,
+  withNavigation,
+} from 'react-navigation'
 import { compose } from 'react-apollo'
 import { FetchError } from '../components/FetchError'
 import { moment, getSaleStatistics, isWeb } from '../utils'
@@ -18,7 +22,7 @@ import { Notifications } from 'expo'
 import { EventSubscription } from 'fbemitter'
 import { NotificationData } from '../types'
 
-type SalesProps = NavigationScreenProps & SalesQueryProp & IsOnlineInjectProps
+type SalesProps = NavigationInjectedProps & SalesQueryProp & IsOnlineInjectProps
 
 class Sales extends Component<SalesProps> {
   listen?: EventSubscription

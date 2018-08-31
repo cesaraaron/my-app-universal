@@ -4,7 +4,7 @@ import { SalesQueryProp, createWithSales } from '../HOCs'
 import { compose } from 'react-apollo'
 import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
-import { NavigationScreenProps, withNavigation } from 'react-navigation'
+import { NavigationInjectedProps, withNavigation } from 'react-navigation'
 import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
 import { Bar, Doughnut, defaults } from 'react-chartjs-2'
 import {
@@ -16,7 +16,7 @@ import {
 // @ts-ignore
 defaults.global.legend.position = 'bottom'
 
-type StatisticsProps = NavigationScreenProps &
+type StatisticsProps = NavigationInjectedProps &
   SalesQueryProp &
   IsOnlineInjectProps
 

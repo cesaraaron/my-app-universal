@@ -17,7 +17,11 @@ import {
   MutationType,
 } from '../__generated__/types'
 import { FetchError } from '../components/FetchError'
-import { withNavigation, NavigationScreenProps } from 'react-navigation'
+import {
+  withNavigation,
+  NavigationScreenProps,
+  NavigationInjectedProps,
+} from 'react-navigation'
 import { ProductsQueryProps, withProducts, ProductType } from '../HOCs'
 import { searchProductWithQuery } from '../utils'
 import sortBy from 'lodash/sortBy'
@@ -29,7 +33,7 @@ import {
 } from '../Providers/PendingMutations'
 
 type DatabaseProps = ProductsQueryProps &
-  NavigationScreenProps &
+  NavigationInjectedProps &
   IsOnlineInjectProps &
   PendingMutationsInjectProps
 

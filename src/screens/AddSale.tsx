@@ -11,7 +11,7 @@ import {
   Button,
 } from 'native-base'
 import { TextInput, Keyboard } from 'react-native'
-import { NavigationScreenProps, withNavigation } from 'react-navigation'
+import { NavigationInjectedProps, withNavigation } from 'react-navigation'
 import {
   ProductsQueryProps,
   SaleType,
@@ -51,7 +51,9 @@ type addProductToCart = {
   initialQuantity?: number
 }
 
-type AddSaleProps = NavigationScreenProps<{ sale: SaleType & OptimisticProp }> &
+type AddSaleProps = NavigationInjectedProps<{
+  sale: SaleType & OptimisticProp
+}> &
   ProductsQueryProps &
   WithCurrentUserProps &
   CreateSaleMutationProp &
