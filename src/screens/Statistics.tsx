@@ -6,20 +6,31 @@ import Loading from '../components/Loading'
 import { FetchError } from '../components/FetchError'
 import { NavigationInjectedProps, withNavigation } from 'react-navigation'
 import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
-import {
-  getTheSixBestSellingProducts,
-  getTotalNumberOfSales,
-  getIncomes,
-} from '../stats'
+import { getTheSixBestSellingProducts, getTotalNumberOfSales } from '../stats'
 import { BarChart } from 'react-native-chart-kit'
-import { Dimensions, View, StyleSheet } from 'react-native'
+import {
+  Dimensions,
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native'
+import { ActionSheet } from 'antd-mobile-rn'
+import { TimeLapse } from '../types'
 
 type StatisticsProps = NavigationInjectedProps &
   SalesQueryProp &
   IsOnlineInjectProps
 
-class Statistics extends Component<StatisticsProps> {
+type StatisticsState = {
+  showLast: TimeLapse
+}
+
+class Statistics extends Component<StatisticsProps, StatisticsState> {
   // Use subscription to update the sales instead of re-rendering on focus
+  state = {
+    showLast: TimeLapse.lastWeek,
+  }
+
   componentDidMount() {
     this.props.navigation.addListener('willFocus', () =>
       this.props.feedSales.refetch()
@@ -27,6 +38,27 @@ class Statistics extends Component<StatisticsProps> {
     Dimensions.addEventListener('change', () => {
       this.forceUpdate()
     })
+  }
+
+  showActionSheet = () => {
+    const options = [TimeLapse.lastWeek, TimeLapse.lastYear, 'Cancelar']
+    const destructiveButtonIndex = options.indexOf('Cancelar')
+
+    ActionSheet.showActionSheetWithOptions(
+      {
+        options,
+        destructiveButtonIndex,
+      },
+      indexSelected => {
+        if (indexSelected < 0) {
+          return
+        }
+        if (indexSelected === destructiveButtonIndex) {
+          return
+        }
+        this.setState({ showLast: options[indexSelected] as TimeLapse })
+      }
+    )
   }
 
   render() {
@@ -44,13 +76,26 @@ class Statistics extends Component<StatisticsProps> {
 
     return (
       <Content style={{ backgroundColor: '#f4f4f4' }}>
+        {this._renderDatePick()}
         {this._renderBestSellingProducts()}
         {this._renderNumberOfSalesStats()}
       </Content>
     )
   }
 
+  _renderDatePick = () => {
+    const { showLast } = this.state
+    return (
+      <TouchableWithoutFeedback onPress={() => this.showActionSheet()}>
+        <Text note style={{ padding: 15 }}>
+          Mostrar: {showLast}
+        </Text>
+      </TouchableWithoutFeedback>
+    )
+  }
+
   _renderBestSellingProducts = () => {
+    const { showLast } = this.state
     const {
       feedSales: { sales },
     } = this.props
@@ -59,8 +104,8 @@ class Statistics extends Component<StatisticsProps> {
       return null
     }
 
-    const pieColor = randomColor()
-    const bestSelling = getTheSixBestSellingProducts(sales)
+    const pieColor = '#553D36'
+    const bestSelling = getTheSixBestSellingProducts(sales, showLast)
 
     return (
       <React.Fragment>
@@ -97,6 +142,7 @@ class Statistics extends Component<StatisticsProps> {
   }
 
   _renderNumberOfSalesStats = () => {
+    const { showLast } = this.state
     const {
       feedSales: { sales },
     } = this.props
@@ -105,11 +151,12 @@ class Statistics extends Component<StatisticsProps> {
       return null
     }
 
-    const chartColorOne = randomColor()
-    const chartColorTwo = randomColor()
+    const chartColorOne = '#3D373D'
+    const chartColorTwo = '#4B576F'
 
-    const numberOfSales = getTotalNumberOfSales(sales)
-    const incomes = getIncomes(sales)
+    const { labels, data } = getTotalNumberOfSales(sales, showLast)
+    const numberOfSales = { data: data.map(s => s.unitsSold), labels }
+    const incomes = { data: data.map(s => s.money), labels }
 
     return (
       <React.Fragment>
@@ -201,7 +248,8 @@ const styles = StyleSheet.create({
   textStats: { padding: 10 },
 })
 
-const randomColor = () =>
-  ('#' + ((Math.random() * 0xffffff) << 0).toString(16) + '000000').slice(0, 7)
+// TODO: add lots of predefined colors instead of generating them here
+// const randomColor = () =>
+//   ('#' + ((Math.random() * 0xffffff) << 0).toString(16) + '000000').slice(0, 7)
 
 const unity = (u: number) => (u === 0 ? '' : u === 1 ? 'unidad' : 'unidades')

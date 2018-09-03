@@ -5,3 +5,8 @@ export type OptimisticProp = {
 export type NotificationData = {
   fireWhenProductIds?: string[]
 }
+
+export enum TimeLapse {
+  lastWeek = 'Ultima semana',
+  lastYear = 'Ultimo año',
+}

@@ -7,11 +7,9 @@ import { FetchError } from '../components/FetchError'
 import { NavigationInjectedProps, withNavigation } from 'react-navigation'
 import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
 import { Bar, Doughnut, defaults } from 'react-chartjs-2'
-import {
-  getTotalNumberOfSales,
-  getTheSixBestSellingProducts,
-  getIncomes,
-} from '../stats'
+import { getTotalNumberOfSales, getTheSixBestSellingProducts } from '../stats'
+import { TimeLapse } from '../types'
+import { ActionSheet } from 'antd-mobile-rn'
 
 // @ts-ignore
 defaults.global.legend.position = 'bottom'
@@ -20,7 +18,36 @@ type StatisticsProps = NavigationInjectedProps &
   SalesQueryProp &
   IsOnlineInjectProps
 
-class Statistics extends Component<StatisticsProps> {
+type StatisticsState = {
+  showLast: TimeLapse
+}
+
+class Statistics extends Component<StatisticsProps, StatisticsState> {
+  state = {
+    showLast: TimeLapse.lastWeek,
+  }
+
+  showActionSheet = () => {
+    const options = [TimeLapse.lastWeek, TimeLapse.lastYear, 'Cancelar']
+    const destructiveButtonIndex = options.indexOf('Cancelar')
+
+    ActionSheet.showActionSheetWithOptions(
+      {
+        options,
+        destructiveButtonIndex,
+      },
+      indexSelected => {
+        if (indexSelected < 0) {
+          return
+        }
+        if (indexSelected === destructiveButtonIndex) {
+          return
+        }
+        this.setState({ showLast: options[indexSelected] as TimeLapse })
+      }
+    )
+  }
+
   componentDidMount() {
     this.props.navigation.addListener('willFocus', () =>
       this.props.feedSales.refetch()
@@ -47,6 +74,7 @@ class Statistics extends Component<StatisticsProps> {
     return (
       <Content style={{ backgroundColor: '#f4f4f4' }}>
         <List style={{ backgroundColor: 'white' }}>
+          {this._renderDatePick()}
           {this._renderBestSellingProducts()}
           {this._renderNumberOfSalesStats()}
         </List>
@@ -54,17 +82,28 @@ class Statistics extends Component<StatisticsProps> {
     )
   }
 
+  _renderDatePick = () => {
+    const { showLast } = this.state
+    return (
+      <ListItem itemDivider onPress={() => this.showActionSheet()}>
+        <Text note>Mostrar: {showLast}</Text>
+      </ListItem>
+    )
+  }
+
   _renderNumberOfSalesStats = () => {
     const {
       feedSales: { sales },
     } = this.props
+    const { showLast } = this.state
 
     if (!sales) {
       return null
     }
 
-    const numberOfSales = getTotalNumberOfSales(sales)
-    const incomes = getIncomes(sales)
+    const { labels, data } = getTotalNumberOfSales(sales, showLast)
+    const numberOfSales = { data: data.map(s => s.unitsSold), labels }
+    const incomes = { data: data.map(s => s.money), labels }
 
     return (
       <React.Fragment>
@@ -161,12 +200,13 @@ class Statistics extends Component<StatisticsProps> {
     const {
       feedSales: { sales },
     } = this.props
+    const { showLast } = this.state
 
     if (!sales) {
       return null
     }
 
-    const bestSelling = getTheSixBestSellingProducts(sales)
+    const bestSelling = getTheSixBestSellingProducts(sales, showLast)
 
     return (
       <React.Fragment>
