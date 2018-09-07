@@ -41,8 +41,12 @@ class Sales extends Component<SalesProps> {
 
   listenToNotifications = (payload: Notifications.Notification) => {
     const { navigation } = this.props
-    const { data } = payload
+    const { data, origin } = payload
     const { fireWhenProductIds } = data as NotificationData
+
+    if (origin === 'received') {
+      return
+    }
 
     if (!fireWhenProductIds) {
       return
