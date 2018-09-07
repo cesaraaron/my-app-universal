@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Content, ListItem, Text } from 'native-base'
+import { Content, ListItem, Text, Button } from 'native-base'
 import { SalesQueryProp, createWithSales } from '../HOCs'
 import { compose } from 'react-apollo'
 import Loading from '../components/Loading'
@@ -32,9 +32,9 @@ class Statistics extends Component<StatisticsProps, StatisticsState> {
   }
 
   componentDidMount() {
-    this.props.navigation.addListener('willFocus', () =>
-      this.props.feedSales.refetch()
-    )
+    // this.props.navigation.addListener('willFocus', () =>
+    //   this.props.feedSales.refetch()
+    // )
     Dimensions.addEventListener('change', () => {
       this.forceUpdate()
     })
@@ -79,6 +79,22 @@ class Statistics extends Component<StatisticsProps, StatisticsState> {
         {this._renderDatePick()}
         {this._renderBestSellingProducts()}
         {this._renderNumberOfSalesStats()}
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            alignContent: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Button
+            light
+            style={{ alignSelf: 'center', margin: 10 }}
+            onPress={() => refetch()}
+          >
+            <Text>Refrescar</Text>
+          </Button>
+        </View>
       </Content>
     )
   }
