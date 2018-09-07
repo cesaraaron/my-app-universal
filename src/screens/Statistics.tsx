@@ -23,20 +23,19 @@ type StatisticsProps = NavigationInjectedProps &
 
 type StatisticsState = {
   showLast: TimeLapse
+  screenWidth: number
 }
 
 class Statistics extends Component<StatisticsProps, StatisticsState> {
   // Use subscription to update the sales instead of re-rendering on focus
   state = {
     showLast: TimeLapse.lastWeek,
+    screenWidth: Dimensions.get('screen').width,
   }
 
   componentDidMount() {
-    // this.props.navigation.addListener('willFocus', () =>
-    //   this.props.feedSales.refetch()
-    // )
-    Dimensions.addEventListener('change', () => {
-      this.forceUpdate()
+    Dimensions.addEventListener('change', ({ screen }) => {
+      this.setState({ screenWidth: screen.width })
     })
   }
 
@@ -111,7 +110,7 @@ class Statistics extends Component<StatisticsProps, StatisticsState> {
   }
 
   _renderBestSellingProducts = () => {
-    const { showLast } = this.state
+    const { showLast, screenWidth } = this.state
     const {
       feedSales: { sales },
     } = this.props
@@ -130,7 +129,7 @@ class Statistics extends Component<StatisticsProps, StatisticsState> {
         </ListItem>
 
         <BarChart
-          width={Dimensions.get('window').width}
+          width={screenWidth}
           height={220}
           data={{
             labels: bestSelling.map(p => p.name),
@@ -158,7 +157,7 @@ class Statistics extends Component<StatisticsProps, StatisticsState> {
   }
 
   _renderNumberOfSalesStats = () => {
-    const { showLast } = this.state
+    const { showLast, screenWidth } = this.state
     const {
       feedSales: { sales },
     } = this.props
@@ -180,7 +179,7 @@ class Statistics extends Component<StatisticsProps, StatisticsState> {
           <Text style={marginTop}>Ventas</Text>
         </ListItem>
         <BarChart
-          width={Dimensions.get('window').width}
+          width={screenWidth}
           height={220}
           data={{
             labels: numberOfSales.labels,
@@ -209,7 +208,7 @@ class Statistics extends Component<StatisticsProps, StatisticsState> {
           </Text>
         </View>
         <BarChart
-          width={Dimensions.get('window').width}
+          width={screenWidth}
           height={220}
           data={{
             labels: incomes.labels,
