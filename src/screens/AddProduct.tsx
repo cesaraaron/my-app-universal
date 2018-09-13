@@ -46,6 +46,7 @@ import {
 } from '../Providers/PendingMutations'
 import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 import { alert } from '../components/alert'
+import { Toast } from 'antd-mobile-rn'
 
 type AddProductProps = CreateProductMutationProp &
   UpdateProductMutationProp &
@@ -187,7 +188,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
                       <Label>Cantidad disponible</Label>
                     )}
                     <Input
-                      keyboardType="number-pad"
+                      keyboardType="numeric"
                       value={values.quantity}
                       onBlur={() => setFieldTouched('quantity', true)}
                       onChangeText={text => setFieldValue('quantity', text)}
@@ -294,6 +295,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
         }
 
         if (!createProduct.__optimistic) {
+          Toast.success('Exito')
           removeId(optimisticId)
         }
 

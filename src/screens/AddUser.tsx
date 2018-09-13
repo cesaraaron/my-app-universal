@@ -41,6 +41,7 @@ import {
   withPendingMutations,
 } from '../Providers/PendingMutations'
 import { alert } from '../components/alert'
+import { Toast } from 'antd-mobile-rn'
 
 const {
   CREATE_PRODUCTS,
@@ -381,6 +382,7 @@ class AddUser extends Component<AddUserProps, AddUserState> {
         }
 
         if (!createUser.__optimistic) {
+          Toast.success('Exito')
           removeId(optimisticId)
         }
         const data = proxy.readQuery({
