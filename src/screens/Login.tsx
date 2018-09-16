@@ -8,6 +8,7 @@ import {
   Input,
   Button,
   Text,
+  Spinner,
 } from 'native-base'
 import { Keyboard } from 'react-native'
 import { compose } from 'react-apollo'
@@ -23,6 +24,7 @@ import { alert } from '../components/alert'
 type LoginState = {
   phoneNumber: string
   password: string
+  authenticating: boolean
 }
 
 type LoginProps = LoginMutationProps & WithAuthProps & IsOnlineInjectProps
@@ -31,11 +33,12 @@ class Login extends Component<LoginProps, LoginState> {
   state = {
     phoneNumber: '',
     password: '',
+    authenticating: false,
   }
 
   render() {
     const { isOnline } = this.props
-    const { phoneNumber, password } = this.state
+    const { phoneNumber, password, authenticating } = this.state
 
     return (
       <Container>
@@ -64,18 +67,19 @@ class Login extends Component<LoginProps, LoginState> {
           </Form>
           <Button
             block
-            disabled={!phoneNumber || !password}
+            disabled={!phoneNumber || !password || authenticating}
             style={{ marginTop: 10 }}
             onPress={this._signIn}
           >
             <Text>Entrar</Text>
+            {authenticating ? <Spinner color="gray" /> : null}
           </Button>
         </Content>
       </Container>
     )
   }
 
-  _signIn = () => {
+  _signIn = async () => {
     const { phoneNumber, password } = this.state
     const { loginMutation, signIn, isOnline } = this.props
 
@@ -86,16 +90,20 @@ class Login extends Component<LoginProps, LoginState> {
       return
     }
 
-    loginMutation({
-      variables: {
-        phoneNumber,
-        password,
-      },
-    })
-      .then(val => {
-        signIn(val.data.login.token)
+    this.setState({ authenticating: true })
+
+    try {
+      const result = await loginMutation({
+        variables: {
+          phoneNumber,
+          password,
+        },
       })
-      .catch(() => {})
+
+      signIn(result.data.login.token)
+    } catch {
+      this.setState({ authenticating: false })
+    }
   }
 }
 
