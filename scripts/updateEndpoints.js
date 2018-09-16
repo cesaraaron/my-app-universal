@@ -3,7 +3,7 @@ const { join } = require('path')
 const ip = require('ip')
 const dotenv = require('dotenv')
 
-const envPath = join(process.cwd(), '.env.development')
+const envPath = join(process.cwd(), '.env')
 
 const httpEndpointKey = 'HTTP_ENDPOINT'
 const wsEndpointKey = 'WS_ENDPOINT'
