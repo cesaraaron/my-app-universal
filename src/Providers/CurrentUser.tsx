@@ -1,14 +1,24 @@
 import React from 'react'
 import { UserType } from '../HOCs'
 import Loading from '../components/Loading'
-import { ChildDataProps, graphql } from 'react-apollo'
-import { ME_QUERY } from '../queries'
+import { ChildDataProps, graphql, Subscription } from 'react-apollo'
+import { ME_QUERY, USER_SUBSCRIPTION } from '../queries'
 import { FetchError } from '../components/FetchError'
-import { MeQuery } from '../__generated__/types'
+import {
+  MeQuery,
+  UserSubscription,
+  MutationType,
+  UserSubscriptionVariables,
+} from '../__generated__/types'
 
 type UserContextValue = {
   currentUser: UserType
 }
+
+class UsersSubscription extends Subscription<
+  UserSubscription,
+  UserSubscriptionVariables
+> {}
 
 class SignOut extends React.Component<{ signOut: () => {} }> {
   componentDidMount() {
@@ -54,6 +64,33 @@ type CurrentUserInternalProps = CurrentUserExternalProps & MeDataProps
 
 export const CurrentUserProvider = withMe(
   class CurrentUser extends React.Component<CurrentUserInternalProps> {
+    updateCurrentUser = ({ user }: UserSubscription) => {
+      const {
+        data: { updateQuery, me },
+      } = this.props
+
+      if (!user || !me) {
+        return
+      }
+
+      if (user.mutation === MutationType.DELETED) {
+        if (!user.previousValues) {
+          return
+        }
+        if (user.previousValues.id.includes(me.id)) {
+          this.props.signOut()
+        }
+      }
+
+      if (user.mutation === MutationType.UPDATED) {
+        if (!user.node) {
+          return
+        }
+
+        updateQuery(() => user.node)
+      }
+    }
+
     render() {
       const {
         children,
@@ -76,9 +113,25 @@ export const CurrentUserProvider = withMe(
       }
 
       return (
-        <UserContext.Provider value={{ currentUser: me }}>
-          {children}
-        </UserContext.Provider>
+        <React.Fragment>
+          <UsersSubscription
+            subscription={USER_SUBSCRIPTION}
+            variables={{ userId: me.id }}
+          >
+            {({ data }) => {
+              if (!data) {
+                return null
+              }
+
+              this.updateCurrentUser(data)
+
+              return null
+            }}
+          </UsersSubscription>
+          <UserContext.Provider value={{ currentUser: me }}>
+            {children}
+          </UserContext.Provider>
+        </React.Fragment>
       )
     }
   }

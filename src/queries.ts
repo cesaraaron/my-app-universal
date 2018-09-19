@@ -211,9 +211,12 @@ export const GET_USERS = gql`
 `
 
 export const USER_SUBSCRIPTION = gql`
-  subscription User {
-    user {
+  subscription User($userId: ID!) {
+    user(userId: $userId) {
       mutation
+      previousValues {
+        id
+      }
       node {
         id
         name

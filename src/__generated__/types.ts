@@ -291,10 +291,18 @@ export interface getUsersQuery {
   }>
 }
 
+export interface UserSubscriptionVariables {
+  userId: string
+}
+
 export interface UserSubscription {
   user: {
     __typename: 'UserSubscriptionPayload'
     mutation: MutationType
+    previousValues: {
+      __typename: 'UserPreviousValues'
+      id: string
+    } | null
     node: {
       __typename: 'User'
       id: string
