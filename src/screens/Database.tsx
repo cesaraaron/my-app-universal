@@ -133,39 +133,52 @@ class Database extends Component<DatabaseProps, DatabaseState> {
         if (!data.product) {
           return prev
         }
-        const { mutation, node } = data.product
 
-        // If there is no node sent it is probably a deleted mutation
-        // primsa does not send currently a node when deleting an entry.
-        if (!node) {
-          return prev
-        }
+        const { mutation, node, previousValues } = data.product
 
-        switch (mutation) {
-          case MutationType.CREATED:
-            return {
-              ...prev,
-              products: [...prev.products, node],
-            }
-          case MutationType.UPDATED:
-            return {
-              ...prev,
-              products: prev.products.map(p => {
-                if (p.id === node.id) {
-                  return node
-                } else {
-                  return p
-                }
-              }),
-            }
-          case MutationType.DELETED:
-            return {
-              ...prev,
-              products: prev.products.filter(p => p.id !== node.id),
-            }
-          default:
+        if (mutation === MutationType.DELETED) {
+          if (!previousValues) {
             return prev
+          }
+          const deletedProductId = previousValues.id
+          return {
+            ...prev,
+            products: prev.products.filter(
+              s => !deletedProductId.includes(s.id)
+            ),
+          }
         }
+
+        if (mutation === MutationType.UPDATED) {
+          if (!node) {
+            return prev
+          }
+
+          return {
+            ...prev,
+            products: prev.products.map(p => {
+              if (p.id === node.id) {
+                return node
+              } else {
+                return p
+              }
+            }),
+          }
+        }
+
+        if (mutation === MutationType.CREATED) {
+          if (!node) {
+            return prev
+          }
+          return {
+            ...prev,
+            products: prev.products.some(p => p.id === node.id)
+              ? prev.products
+              : [node, ...prev.products],
+          }
+        }
+
+        return prev
       },
     })
   }

@@ -90,6 +90,9 @@ export const PRODUCT_SUBSCRIPTION = gql`
   subscription Product {
     product {
       mutation
+      previousValues {
+        id
+      }
       node {
         id
         name
@@ -164,6 +167,9 @@ export const SALE_SUBSCRIPTION = gql`
   subscription Sale {
     sale {
       mutation
+      previousValues {
+        id
+      }
       node {
         id
         createdAt

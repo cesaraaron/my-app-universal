@@ -123,6 +123,10 @@ export interface ProductSubscription {
   product: {
     __typename: 'ProductSubscriptionPayload'
     mutation: MutationType
+    previousValues: {
+      __typename: 'ProductPreviousValues'
+      id: string
+    } | null
     node: {
       __typename: 'Product'
       id: string
@@ -214,6 +218,10 @@ export interface SaleSubscription {
   sale: {
     __typename: 'SaleSubscriptionPayload'
     mutation: MutationType
+    previousValues: {
+      __typename: 'SalePreviousValues'
+      id: string
+    } | null
     node: {
       __typename: 'Sale'
       id: string

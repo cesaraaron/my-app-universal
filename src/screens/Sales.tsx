@@ -14,9 +14,9 @@ import sortBy from 'lodash/sortBy'
 import { IsOnlineInjectProps, withIsOnline } from '../Providers/IsOnline'
 import { SALE_SUBSCRIPTION } from '../queries'
 import {
-  getSalesQuery,
   SaleSubscription,
   MutationType,
+  getSalesQuery,
 } from '../__generated__/types'
 import { Notifications } from 'expo'
 import { EventSubscription } from 'fbemitter'
@@ -31,7 +31,6 @@ class Sales extends Component<SalesProps> {
     if (!isWeb) {
       this.listen = Notifications.addListener(this.listenToNotifications)
     }
-
     this._subscribeToMore()
   }
 
@@ -100,11 +99,6 @@ class Sales extends Component<SalesProps> {
                   <Text note>{`${totalUnits} ${
                     totalUnits === 1 ? 'producto vendido' : 'productos vendidos'
                   }, Lps. ${totalMoney}`}</Text>
-                  {/* <Text note style={{ paddingLeft: 5 }}>{`${totalProducts} ${
-                      totalProducts === 1
-                        ? 'producto vendido'
-                        : 'productos vendidos'
-                    }`}</Text> */}
                 </Body>
               </ListItem>
             )
@@ -131,29 +125,32 @@ class Sales extends Component<SalesProps> {
           return prev
         }
 
-        const { node, mutation } = data.sale
+        const { node, mutation, previousValues } = data.sale
 
-        // If there is no node sent it is probably a deleted mutation
-        // primsa does not send currently a node when deleting an entry.
-        if (!node) {
-          return prev
-        }
-
-        switch (mutation) {
-          case MutationType.CREATED:
-            return {
-              ...prev,
-              sales: [node, ...prev.sales],
-            }
-          // this does not work, prisma does not send a node when deleting a mutation
-          case MutationType.DELETED:
-            return {
-              ...prev,
-              sales: prev.sales.filter(sale => sale.id !== node.id),
-            }
-          default:
+        if (mutation === MutationType.DELETED) {
+          if (!previousValues) {
             return prev
+          }
+          const deletedSaleId = previousValues.id
+
+          return {
+            ...prev,
+            sales: prev.sales.filter(s => !deletedSaleId.includes(s.id)),
+          }
         }
+
+        if (mutation === MutationType.CREATED) {
+          if (!node) {
+            return prev
+          }
+          return {
+            sales: prev.sales.some(s => s.id === node.id)
+              ? prev.sales
+              : [node, ...prev.sales],
+          }
+        }
+
+        return prev
       },
     })
   }
