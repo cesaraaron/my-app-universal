@@ -27,6 +27,7 @@
     "electron": "^2.0.4",
     "electron-builder": "^20.19.2",
     "eslint": "^5.0.1",
+    "express": "^4.16.3",
     "file-loader": "^1.1.11",
     "husky": "^0.14.3",
     "jest-expo": "~27.0.0",
@@ -58,7 +59,8 @@
     "electron": "cross-env NODE_ENV=development electron public/electron",
     "build": "cross-env NODE_ENV=production webpack -p --config ./webpack.config.js",
     "preelectron-pack": "yarn build",
-    "electron-pack": "electron-builder",
+    "electron-pack": "electron-builder --win",
+    "updates-server": "webpack --target=node --mode=production --output=electron-builder-server.prod.js",
     "generate": "apollo-codegen introspect-schema http://localhost:4000 --output src/schema.json && apollo-codegen generate ./src/queries.ts --add-typename --schema ./src/schema.json --target typescript --output ./src/__generated__/types.ts",
     "precommit": "lint-staged"
   },
