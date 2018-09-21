@@ -303,7 +303,9 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
           query: GET_PRODUCTS,
         }) as getProductsQuery
 
-        data.products = [...data.products, createProduct]
+        data.products = data.products.some(p => p.id === createProduct.id)
+          ? data.products
+          : [...data.products, createProduct]
 
         proxy.writeQuery({ query: GET_PRODUCTS, data })
       },

@@ -488,7 +488,9 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
         const data = proxy.readQuery({ query: GET_SALES }) as getSalesQuery
 
-        data.sales = [createSale, ...data.sales]
+        data.sales = data.sales.some(s => s.id === createSale.id)
+          ? data.sales
+          : [createSale, ...data.sales]
 
         proxy.writeQuery({ query: GET_SALES, data })
         proxy.writeQuery({
