@@ -23,6 +23,7 @@ const ProductFragments = gql`
     createdAt
     updatedAt
     notifications
+    barCodeData
     quantity
     price
   }
@@ -99,6 +100,7 @@ export const PRODUCT_SUBSCRIPTION = gql`
         createdAt
         updatedAt
         notifications
+        barCodeData
         quantity
         price
       }
@@ -112,12 +114,14 @@ export const CREATE_PRODUCT_MUTATION = gql`
     $price: Float!
     $quantity: Int!
     $notifications: Boolean!
+    $barCodeData: String
   ) {
     createProduct(
       name: $name
       price: $price
       quantity: $quantity
       notifications: $notifications
+      barCodeData: $barCodeData
     ) {
       ...Product
     }
@@ -132,6 +136,7 @@ export const UPDATE_PRODUCT_MUTATION = gql`
     $price: Float
     $quantity: Int
     $notifications: Boolean
+    $barCodeData: String
   ) {
     updateProduct(
       productId: $productId
@@ -139,6 +144,7 @@ export const UPDATE_PRODUCT_MUTATION = gql`
       price: $price
       quantity: $quantity
       notifications: $notifications
+      barCodeData: $barCodeData
     ) {
       ...Product
     }

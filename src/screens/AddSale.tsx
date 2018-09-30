@@ -42,6 +42,7 @@ import {
 import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 import { Modal } from 'antd-mobile-rn'
 import { alert } from '../components/alert'
+import BarCodeScanner from '../components/BarCodeScanner'
 
 type Partial<T> = { [P in keyof T]?: T[P] }
 
@@ -71,6 +72,8 @@ type CartProduct = {
 }
 
 type AddSaleState = {
+  showSearchBar: boolean
+  showScanner: boolean
   sale?: SaleType & OptimisticProp
   saleId?: string
   cartProducts: CartProduct[]
@@ -102,6 +105,8 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
     if (sale && sale.products) {
       this.state = {
+        showScanner: false,
+        showSearchBar: false,
         sale,
         saleId: sale.id,
         cartProducts: sale.products,
@@ -110,6 +115,8 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
       }
     } else {
       this.state = {
+        showScanner: false,
+        showSearchBar: false,
         cartProducts: [],
         query: '',
         products: [],
@@ -117,12 +124,19 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
     }
   }
 
+  getProductForBarCodeData = (barCodeData: string): ProductType | null => {
+    const { products } = this.state
+
+    const product = products.find(p => p.barCodeData === barCodeData)
+
+    return product || null
+  }
+
   render() {
     const {
       feedProducts: { error, loading, refetch },
       isOnline,
     } = this.props
-    const { saleId, query } = this.state
 
     if (loading && isOnline) {
       return <Loading />
@@ -134,7 +148,109 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
 
     return (
       <Container>
-        {saleId ? null : (
+        <Content style={{ backgroundColor: '#f4f4f4' }}>
+          <View style={{ marginTop: 20 }}>
+            {this._renderSearchBarOrScanner()}
+          </View>
+          <List style={{ backgroundColor: 'white' }}>
+            {this._renderSearchResults()}
+            {this._renderCar()}
+            {this._renderTotal()}
+          </List>
+          {this._renderFooterButtons()}
+        </Content>
+      </Container>
+    )
+  }
+
+  _renderSearchBarOrScanner = () => {
+    const { saleId, query, showSearchBar, showScanner } = this.state
+
+    if (saleId) {
+      return null
+    }
+
+    const footer = (
+      <Button
+        transparent
+        danger
+        onPress={() =>
+          this.setState({ showScanner: false, showSearchBar: false, query: '' })
+        }
+        style={{ alignSelf: 'center' }}
+      >
+        <Text>Cancelar</Text>
+      </Button>
+    )
+
+    if (showScanner === false && showSearchBar === false) {
+      return (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Button
+            transparent
+            onPress={() =>
+              this.setState({ showScanner: true, showSearchBar: false })
+            }
+          >
+            <Text>Scanear producto</Text>
+          </Button>
+          <Button
+            transparent
+            onPress={() =>
+              this.setState({ showScanner: false, showSearchBar: true })
+            }
+          >
+            <Text>Buscar producto</Text>
+          </Button>
+        </View>
+      )
+    }
+
+    if (showScanner === true && showSearchBar === false) {
+      return (
+        <View>
+          <BarCodeScanner
+            handleBarCodeRead={barCodeData => {
+              const product = this.getProductForBarCodeData(barCodeData)
+
+              if (!product) {
+                alert(
+                  'Error',
+                  `El codigo de barra '${barCodeData}' no coincide con ningun producto en la base de datos.`
+                )
+                return null
+              }
+
+              Modal.prompt(
+                'Cantidad a vender',
+                `Producto con nombre: ${product.name}`,
+                [
+                  {
+                    text: 'Cancelar',
+                  },
+                  {
+                    text: 'Agregar',
+                    onPress: (quantity: string) =>
+                      this._addProductToCart({
+                        productId: product.id,
+                        quantity: parseInt(quantity),
+                      }),
+                  },
+                ],
+                null
+              )
+
+              return null
+            }}
+          />
+          {footer}
+        </View>
+      )
+    }
+
+    if (showScanner === false && showSearchBar === true) {
+      return (
+        <View>
           <TextInput
             ref={node => {
               if (!node) {
@@ -147,18 +263,12 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
             placeholder="Buscar producto por nombre, marca etc."
             onChangeText={text => this.setState({ query: text })}
           />
-        )}
+          {footer}
+        </View>
+      )
+    }
 
-        <Content style={{ backgroundColor: '#f4f4f4' }}>
-          <List style={{ backgroundColor: 'white' }}>
-            {this._renderSearchResults()}
-            {this._renderCar()}
-            {this._renderTotal()}
-          </List>
-          {this._renderFooterButtons()}
-        </Content>
-      </Container>
-    )
+    return null
   }
 
   _renderSearchResults = () => {
@@ -190,8 +300,8 @@ class AddSale extends Component<AddSaleProps, AddSaleState> {
                   Keyboard.dismiss()
                 }
                 Modal.prompt(
-                  '',
-                  'Ingresa la cantidad a vender.',
+                  'Cantidad a vender',
+                  `Producto con nombre: ${product.name}`,
                   [
                     {
                       text: 'Cancelar',

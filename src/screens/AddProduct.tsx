@@ -26,6 +26,8 @@ import {
   Body,
   Right,
   Switch,
+  ListItem,
+  List,
 } from 'native-base'
 import { Formik, FormikActions, FormikErrors } from 'formik'
 import { Keyboard } from 'react-native'
@@ -47,6 +49,7 @@ import {
 import { withCurrentUser, WithCurrentUserProps } from '../Providers/CurrentUser'
 import { alert } from '../components/alert'
 import { Toast } from 'antd-mobile-rn'
+import BarCodeScanner from '../components/BarCodeScanner'
 
 type AddProductProps = CreateProductMutationProp &
   UpdateProductMutationProp &
@@ -61,9 +64,11 @@ type InitialValues = {
   quantity: string
   price: string
   notifications: boolean
+  barCodeData: string | null
 }
 
 type AddProductState = {
+  showBarCodeScanner: boolean
   product?: ProductType & OptimisticProp
   productId?: string
   initialValues: InitialValues
@@ -75,11 +80,13 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
     const product = props.navigation.getParam('product')
 
     let state: AddProductState = {
+      showBarCodeScanner: false,
       initialValues: {
         name: '',
         price: '',
         quantity: '',
         notifications: true,
+        barCodeData: null,
       },
     }
 
@@ -89,9 +96,11 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
     }
 
     state = {
+      showBarCodeScanner: false,
       product,
       productId: product.id,
       initialValues: {
+        barCodeData: product.barCodeData,
         name: product.name + '',
         price: product.price + '',
         quantity: product.quantity + '',
@@ -104,11 +113,11 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
 
   render() {
     const { entries } = this.props
-    const { productId, initialValues } = this.state
+    const { productId, initialValues, showBarCodeScanner } = this.state
 
     return (
       <Container style={{ backgroundColor: 'white' }}>
-        <Content padder>
+        <Content style={{ backgroundColor: '#f4f4f4' }}>
           <Formik
             initialValues={initialValues}
             validate={({ name, price, quantity }) => {
@@ -152,61 +161,120 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
               setFieldTouched,
             }) => {
               return (
-                <Form>
-                  <Item stackedLabel error={errors.name && touched.name}>
-                    {errors.name && touched.name ? (
-                      <Label style={{ color: 'red' }}>{errors.name}</Label>
-                    ) : (
-                      <Label>Nombre</Label>
-                    )}
-                    <Input
-                      value={values.name}
-                      onBlur={() => setFieldTouched('name', true)}
-                      onChangeText={text => setFieldValue('name', text)}
-                    />
-                  </Item>
-                  <Item stackedLabel error={errors.price && touched.price}>
-                    {errors.price && touched.price ? (
-                      <Label style={{ color: 'red' }}>{errors.price}</Label>
-                    ) : (
-                      <Label>Precio</Label>
-                    )}
-                    <Input
-                      keyboardType="numeric"
-                      value={values.price}
-                      onBlur={() => setFieldTouched('price', true)}
-                      onChangeText={text => setFieldValue('price', text)}
-                    />
-                  </Item>
-                  <Item
-                    stackedLabel
-                    error={errors.quantity && touched.quantity}
-                  >
-                    {errors.quantity && touched.quantity ? (
-                      <Label style={{ color: 'red' }}>{errors.quantity}</Label>
-                    ) : (
-                      <Label>Cantidad disponible</Label>
-                    )}
-                    <Input
-                      keyboardType="numeric"
-                      value={values.quantity}
-                      onBlur={() => setFieldTouched('quantity', true)}
-                      onChangeText={text => setFieldValue('quantity', text)}
-                    />
-                  </Item>
-                  <Item style={{ paddingVertical: 10 }}>
-                    <Body>
-                      <Text>Recibir notificationes de este producto:</Text>
-                    </Body>
-                    <Right>
-                      <Switch
-                        value={values.notifications}
-                        onValueChange={val =>
-                          setFieldValue('notifications', val)
-                        }
+                <React.Fragment>
+                  <Form style={{ backgroundColor: 'white', marginTop: 30 }}>
+                    <Item stackedLabel error={errors.name && touched.name}>
+                      {errors.name && touched.name ? (
+                        <Label style={{ color: 'red' }}>{errors.name}</Label>
+                      ) : (
+                        <Label>Nombre</Label>
+                      )}
+                      <Input
+                        value={values.name}
+                        onBlur={() => setFieldTouched('name', true)}
+                        onChangeText={text => setFieldValue('name', text)}
                       />
-                    </Right>
-                  </Item>
+                    </Item>
+                    <Item stackedLabel error={errors.price && touched.price}>
+                      {errors.price && touched.price ? (
+                        <Label style={{ color: 'red' }}>{errors.price}</Label>
+                      ) : (
+                        <Label>Precio</Label>
+                      )}
+                      <Input
+                        keyboardType="numeric"
+                        value={values.price}
+                        onBlur={() => setFieldTouched('price', true)}
+                        onChangeText={text => setFieldValue('price', text)}
+                      />
+                    </Item>
+                    <Item
+                      stackedLabel
+                      error={errors.quantity && touched.quantity}
+                    >
+                      {errors.quantity && touched.quantity ? (
+                        <Label style={{ color: 'red' }}>
+                          {errors.quantity}
+                        </Label>
+                      ) : (
+                        <Label>Cantidad disponible</Label>
+                      )}
+                      <Input
+                        keyboardType="numeric"
+                        value={values.quantity}
+                        onBlur={() => setFieldTouched('quantity', true)}
+                        onChangeText={text => setFieldValue('quantity', text)}
+                      />
+                    </Item>
+                  </Form>
+
+                  <List style={{ marginTop: 50, backgroundColor: 'white' }}>
+                    <ListItem>
+                      <Body>
+                        {values.barCodeData ? (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Button
+                              style={{ paddingLeft: 0, marginLeft: 0 }}
+                              danger
+                              transparent
+                              onPress={() => setFieldValue('barCodeData', null)}
+                            >
+                              <Text>Quitar codigo de barra:</Text>
+                            </Button>
+                            <Text>{values.barCodeData}</Text>
+                          </View>
+                        ) : (
+                          <Button
+                            transparent
+                            onPress={() =>
+                              this.setState({ showBarCodeScanner: true })
+                            }
+                          >
+                            <Text>Agregar codigo de barra</Text>
+                          </Button>
+                        )}
+
+                        {showBarCodeScanner ? (
+                          <React.Fragment>
+                            <BarCodeScanner
+                              handleBarCodeRead={barCodeData => {
+                                setFieldValue('barCodeData', barCodeData)
+                                this.setState({ showBarCodeScanner: false })
+                                return null
+                              }}
+                            />
+                            <Button
+                              danger
+                              transparent
+                              onPress={() =>
+                                this.setState({ showBarCodeScanner: false })
+                              }
+                            >
+                              <Text>Cancelar</Text>
+                            </Button>
+                          </React.Fragment>
+                        ) : null}
+                      </Body>
+                    </ListItem>
+                    <ListItem style={{ paddingVertical: 10 }}>
+                      <Body>
+                        <Text>Recibir notificationes de este producto:</Text>
+                      </Body>
+                      <Right>
+                        <Switch
+                          value={values.notifications}
+                          onValueChange={val =>
+                            setFieldValue('notifications', val)
+                          }
+                        />
+                      </Right>
+                    </ListItem>
+                  </List>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -229,7 +297,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
                       </Button>
                     )}
                   </View>
-                </Form>
+                </React.Fragment>
               )
             }}
           </Formik>
@@ -239,7 +307,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
   }
 
   _createProduct = (
-    { name, price, quantity, notifications }: InitialValues,
+    { name, price, quantity, notifications, barCodeData }: InitialValues,
     opts: FormikActions<InitialValues>
   ) => {
     const { createProduct, isOnline, addId, removeId, currentUser } = this.props
@@ -265,6 +333,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
       variables: {
         name,
         notifications,
+        barCodeData,
         quantity: parseInt(quantity),
         price: parseFloat(price),
       },
@@ -338,6 +407,7 @@ class AddProduct extends Component<AddProductProps, AddProductState> {
         notifications: values.notifications,
         price: parseFloat(values.price),
         quantity: parseInt(values.quantity),
+        barCodeData: values.barCodeData,
       },
       optimisticResponse: {
         updateProduct: {
