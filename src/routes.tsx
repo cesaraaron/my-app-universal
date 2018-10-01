@@ -25,7 +25,7 @@ import NotificationCenter from './screens/NotificationCenter'
 type IconType = 'MaterialCommunityIcons' | 'Ionicons' | 'FontAwesome' | 'Entypo'
 
 const androidNavigationOptions =
-  Platform.OS === 'android' || Platform.OS === 'web'
+  Platform.OS === 'android'
     ? {
         headerTintColor: '#fff',
         headerStyle: {
@@ -71,7 +71,7 @@ const Home = TabNavigator(
     swipeEnabled: isWeb ? false : true,
     tabBarPosition: 'bottom',
     tabBarOptions:
-      Platform.OS === 'android' || Platform.OS === 'web'
+      Platform.OS === 'android'
         ? {
             activeTintColor: '#fff',
             inactiveTintColor: '#fff8',
