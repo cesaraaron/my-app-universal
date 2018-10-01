@@ -45,22 +45,24 @@
     "wait-on": "^2.1.0",
     "webpack": "^4.15.1",
     "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.1.4",
+    "yargs": "^12.0.2"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry-web.js",
   "scripts": {
-    "start": "node scripts/updateEndpoints && react-native-scripts-ts start",
+    "start:mobile": "node scripts/updateEndpoints && react-native-scripts-ts start",
     "eject": "react-native-scripts-ts eject",
     "android": "react-native-scripts-ts android",
     "ios": "react-native-scripts-ts ios",
     "test": "jest",
-    "dev": "concurrently 'yarn run web' 'wait-on http://localhost:8080/ && yarn run electron'",
+    "start:desktop": "concurrently 'yarn run web' 'wait-on http://localhost:8080/ && yarn run electron'",
     "web": "node scripts/updateEndpoints && webpack-dev-server -d --config ./webpack.config.js  --inline --hot --colors --content-base public/ --history-api-fallback",
     "electron": "cross-env NODE_ENV=development electron public/electron",
     "build": "cross-env NODE_ENV=production webpack -p --config ./webpack.config.js",
     "preelectron-pack": "yarn build",
-    "electron-pack": "electron-builder --win",
+    "electron-pack": "electron-builder",
     "updates-server": "webpack --target=node --mode=production --output=electron-builder-server.prod.js",
+    "update-ip": "node ./scripts/updateElectronBuilderPublishIp",
     "generate": "apollo-codegen introspect-schema http://localhost:4000 --output src/schema.json && apollo-codegen generate ./src/queries.ts --add-typename --schema ./src/schema.json --target typescript --output ./src/__generated__/types.ts",
     "precommit": "lint-staged"
   },

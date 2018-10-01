@@ -64,6 +64,7 @@ const link = split(
 
 const request = async (operation: Operation) => {
   const token = await AsyncStorage.getItem(AUTH_TOKEN)
+
   operation.setContext({
     headers: {
       authorization: token,
